@@ -21,15 +21,7 @@ import { pageInit } from "../../utils/animVariants";
 function ProfilePage() {
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
   const { state: cartState, dispatch: cartDispatch } = useContext(CartContext);
-  const {
-    id,
-    email,
-    password,
-    fullname,
-    gender,
-    phone,
-    userrole,
-  } = userState.loggedUser;
+  const { fullName, email, image, role, phone } = userState.loggedUser;
 
   return (
     <motion.div
@@ -50,11 +42,11 @@ function ProfilePage() {
             <Row className="mb-2">
               <Col sm={12} md={4}>
                 <img
-                  src={userrole ? bensu : imgProfileBig}
+                  src={image}
                   alt="profile photo"
                   className="w-100 mb-4 mb-sm-0"
                   height="222"
-                  style={{ borderRadius: "5px", objectFit: "cover" }}
+                  style={{ borderRadius: "5px", objectFit: "scale-down" }}
                 />
               </Col>
               <Col md={8}>
@@ -63,7 +55,7 @@ function ProfilePage() {
                     <h5 className="text-brown">Full Name</h5>
                   </Col>
                   <Col md={12}>
-                    <p>{fullname}</p>
+                    <p>{fullName}</p>
                   </Col>
                 </Row>
                 <Row className="mb-2">
@@ -102,26 +94,18 @@ function ProfilePage() {
             <Row className="mb-4">
               <Col>
                 <h1 className="heading font-weight-bold">
-                  History {userrole ? "Order" : "Transaction"}
+                  History {role ? "Order" : "Transaction"}
                 </h1>
               </Col>
             </Row>
             <Row>
               {cartState.transactions.map((tran, index) =>
-                userState.loggedUser.userrole == 1
+                userState.loggedUser.role == 1
                   ? tran.restaurant.title === userState.loggedUser.fullname && (
-                      <HistoryCard
-                        key={index}
-                        userrole={userrole}
-                        data={tran}
-                      />
+                      <HistoryCard key={index} role={role} data={tran} />
                     )
                   : tran.user.fullname === userState.loggedUser.fullname && (
-                      <HistoryCard
-                        key={index}
-                        userrole={userrole}
-                        data={tran}
-                      />
+                      <HistoryCard key={index} role={role} data={tran} />
                     )
               )}
             </Row>

@@ -1,60 +1,90 @@
-import { Modal, Button, Form } from "react-bootstrap";
+import { useState, useContext } from "react";
 
-// Assets
-import imgProfile from "../../assets/img/profile.png";
+import { Modal, Button, Form } from "react-bootstrap";
+import * as yup from "yup";
 
 // Components
 import CustomFormInput from "../reusable/CustomFormInput";
+
+// State Management
+import { UserContext } from "../../contexts/userContext";
+
+// API
+import { API, setAuthToken } from "../../utils/api";
 
 export default function RegisterModal({
   showRegister,
   handleCloseRegister,
   handleShowLogin,
 }) {
-  const LOCAL_KEY = "ways-food-user";
+  const { state: userState, dispatch: userDispatch } = useContext(UserContext);
+
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+    fullName: "",
+    gender: "male",
+    phone: "",
+    role: "user",
+  });
+
+  const { email, password, fullName, gender, phone, role } = form;
 
   const openLogin = () => {
     handleCloseRegister();
     handleShowLogin();
   };
 
-  const handleRegister = (data) => {
-    !localStorage.getItem(LOCAL_KEY) &&
-      localStorage.setItem(LOCAL_KEY, JSON.stringify([]));
-
-    const localData = JSON.parse(localStorage.getItem(LOCAL_KEY));
-    const { id, email, password, fullname, gender, phone, userrole } = data;
-    const products = userrole === "As Partner" && { products: [] };
-    const userData = {
-      id,
-      email,
-      password,
-      fullname,
-      gender,
-      phone,
-      userrole: userrole === "As Partner" ? 1 : 0,
-      photo: imgProfile,
-      location: "LOCATION",
-      ...products,
-    };
-    const tempData = [...localData, userData];
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(tempData));
+  const onChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const userData = {
-      id: Math.floor(Math.random() * Math.floor(100)),
-      email: e.target.email.value,
-      password: e.target.password.value,
-      fullname: e.target.fullname.value,
-      gender: e.target.gender.value,
-      phone: e.target.phone.value,
-      userrole: e.target.userrole.value,
-    };
-    handleRegister(userData);
-    openLogin();
+    const schema = yup.object().shape({
+      email: yup.string().email().min(10).max(30).required(),
+      password: yup.string().min(5).max(20).required(),
+      fullName: yup.string().max(50).required(),
+      gender: yup.string().max(20).required(),
+      phone: yup.string().min(5).max(13).required(),
+      role: yup.string().max(10).required(),
+    });
+
+    try {
+      const validate = await schema.validate(form);
+    } catch (error) {
+      return console.log(error);
+    }
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+      const response = await API.post("/register", form, config);
+      console.log(response.data);
+      userDispatch({
+        type: "LOGIN",
+        payload: response.data.data.user,
+      });
+      setAuthToken(response.data.data.user.token);
+      setForm({
+        email: "",
+        password: "",
+        fullName: "",
+        gender: "male",
+        phone: "",
+        role: "user",
+      });
+      handleCloseRegister();
+    } catch (error) {
+      return console.log(error.response.data.message);
+    }
   };
+
   return (
     <Modal
       show={showRegister}
@@ -66,46 +96,45 @@ export default function RegisterModal({
         <Form className="d-flex flex-column" onSubmit={handleSubmit}>
           <Form.Group controlId="email">
             <CustomFormInput
+              value={email}
+              onChange={(e) => onChange(e)}
               type="email"
               placeholder="Email"
               name="email"
               required
             />
           </Form.Group>
-
           <Form.Group controlId="password">
             <CustomFormInput
+              value={password}
+              onChange={(e) => onChange(e)}
               type="password"
               placeholder="Password"
               name="password"
               required
             />
           </Form.Group>
-          <Form.Group controlId="fullname">
+          <Form.Group controlId="fullName">
             <CustomFormInput
+              value={fullName}
+              onChange={(e) => onChange(e)}
               type="text"
               placeholder="Full Name"
-              name="fullname"
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="gender">
-            <CustomFormInput
-              type="text"
-              placeholder="Gender"
-              name="gender"
+              name="fullName"
               required
             />
           </Form.Group>
           <Form.Group controlId="phone">
             <CustomFormInput
-              type="text"
+              value={phone}
+              onChange={(e) => onChange(e)}
+              type="number"
               placeholder="Phone"
               name="phone"
               required
             />
           </Form.Group>
-          <Form.Group controlId="userrole" name="userrole">
+          <Form.Group controlId="gender">
             <Form.Control
               as="select"
               style={{
@@ -113,10 +142,33 @@ export default function RegisterModal({
                 boxShadow: "none",
                 backgroundColor: "rgba(210, 210, 210, 0.25)",
                 border: "3px solid #D2D2D2",
+                color: "#6c757d",
               }}
+              name="gender"
+              value={gender}
+              onChange={(e) => onChange(e)}
             >
-              <option>As User</option>
-              <option>As Partner</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="-">-</option>
+            </Form.Control>
+          </Form.Group>
+          <Form.Group controlId="role">
+            <Form.Control
+              as="select"
+              style={{
+                height: "50px",
+                boxShadow: "none",
+                backgroundColor: "rgba(210, 210, 210, 0.25)",
+                border: "3px solid #D2D2D2",
+                color: "#6c757d",
+              }}
+              name="role"
+              value={role}
+              onChange={(e) => onChange(e)}
+            >
+              <option value="user">As User</option>
+              <option value="partner">As Partner</option>
             </Form.Control>
           </Form.Group>
           <Button variant="brown" type="submit" className="mb-3">

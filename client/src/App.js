@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 import { Switch, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 // State Management
 import { UserContextProvider } from "./contexts/userContext";
@@ -32,46 +33,50 @@ function App() {
   const handleCloseRegister = () => setShowRegister(false);
   const handleShowRegister = () => setShowRegister(true);
 
+  const client = new QueryClient();
+
   return (
-    <CartContextProvider>
-      <UserContextProvider>
-        <Header
-          handleShowLogin={handleShowLogin}
-          handleShowRegister={handleShowRegister}
-        />
+    <QueryClientProvider client={client}>
+      <CartContextProvider>
+        <UserContextProvider>
+          <Header
+            handleShowLogin={handleShowLogin}
+            handleShowRegister={handleShowRegister}
+          />
 
-        <AnimatePresence exitBeforeEnter>
-          <Switch location={location} key={location.key}>
-            <Route exact path="/">
-              <LandingPage handleShowLogin={handleShowLogin} />
-            </Route>
-            <Route exact path="/detail/:id">
-              <DetailProductPage />
-            </Route>
-            <PrivateRoute exact path="/cart" component={CartPage} />
-            <PrivateRoute exact path="/profile" component={ProfilePage} />
-            <PrivateRoute
-              exact
-              path="/profile/edit"
-              component={EditProfilePage}
-            />
-            <PrivateRoute exact path="/add" component={AddProductPage} />
-            <PrivateRoute exact path="/income" component={IncomePage} />
-          </Switch>
-        </AnimatePresence>
+          <AnimatePresence exitBeforeEnter>
+            <Switch location={location} key={location.key}>
+              <Route exact path="/">
+                <LandingPage handleShowLogin={handleShowLogin} />
+              </Route>
+              <Route exact path="/detail/:id">
+                <DetailProductPage />
+              </Route>
+              <PrivateRoute exact path="/cart" component={CartPage} />
+              <PrivateRoute exact path="/profile" component={ProfilePage} />
+              <PrivateRoute
+                exact
+                path="/profile/edit"
+                component={EditProfilePage}
+              />
+              <PrivateRoute exact path="/add" component={AddProductPage} />
+              <PrivateRoute exact path="/income" component={IncomePage} />
+            </Switch>
+          </AnimatePresence>
 
-        <LoginModal
-          handleCloseLogin={handleCloseLogin}
-          handleShowRegister={handleShowRegister}
-          showLogin={showLogin}
-        />
-        <RegisterModal
-          handleCloseRegister={handleCloseRegister}
-          handleShowLogin={handleShowLogin}
-          showRegister={showRegister}
-        />
-      </UserContextProvider>
-    </CartContextProvider>
+          <LoginModal
+            handleCloseLogin={handleCloseLogin}
+            handleShowRegister={handleShowRegister}
+            showLogin={showLogin}
+          />
+          <RegisterModal
+            handleCloseRegister={handleCloseRegister}
+            handleShowLogin={handleShowLogin}
+            showRegister={showRegister}
+          />
+        </UserContextProvider>
+      </CartContextProvider>
+    </QueryClientProvider>
   );
 }
 

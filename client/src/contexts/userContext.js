@@ -16,10 +16,17 @@ const reducer = (state, action) => {
 
   switch (type) {
     case "LOGIN":
+      localStorage.setItem("token", payload.token);
       return {
         ...state,
         isLogin: true,
-        loggedUser: payload,
+        loggedUser: {
+          fullName: payload.fullName,
+          email: payload.email,
+          image: payload.image,
+          role: payload.role,
+          phone: payload.phone,
+        },
       };
       break;
     case "LOGOUT":

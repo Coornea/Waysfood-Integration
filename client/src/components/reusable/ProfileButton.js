@@ -34,7 +34,7 @@ const ProfileButton = () => {
 
   return (
     <>
-      <Link to={userState.loggedUser.userrole == 1 ? "/income" : "/cart"}>
+      <Link to={userState.loggedUser.role === "partner" ? "/income" : "/cart"}>
         <motion.div
           whileHover={{
             rotate: [0, 20, -20, 20, -20, 0],
@@ -80,7 +80,7 @@ const ProfileButton = () => {
           }}
         >
           <img
-            src={userState.loggedUser.userrole == 1 ? bensu : imgProfile}
+            src={userState.loggedUser.image}
             alt="photo"
             width="64"
             height="64"
@@ -91,7 +91,7 @@ const ProfileButton = () => {
         <Dropdown.Menu
           style={{
             position: "absolute",
-            left: userState.loggedUser.userrole == 1 ? "-100px" : "-50px",
+            left: userState.loggedUser.role === "partner" ? "-100px" : "-50px",
             fontSize: "1.2em",
           }}
         >
@@ -99,7 +99,7 @@ const ProfileButton = () => {
             <img src={iconProfile} alt="icon" width="30" className="mr-2" />{" "}
             Profile
           </Dropdown.Item>
-          {userState.loggedUser.userrole == 1 && (
+          {userState.loggedUser.role === "partner" && (
             <Dropdown.Item as={Link} to="/add" className="py-2">
               <img
                 src={iconAddProduct}

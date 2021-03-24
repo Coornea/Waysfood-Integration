@@ -40,6 +40,7 @@ exports.register = async (req, res) => {
 
     const user = await User.create({
       ...req.body,
+      location: null,
       image:
         req.body.role === "user" ? "user-default.png" : "partner-default.png",
       password: hashedPassword,
@@ -53,6 +54,8 @@ exports.register = async (req, res) => {
       secretKey
     );
 
+    const url = process.env.UPLOAD_URL;
+
     res.send({
       status: "success",
       message: "Register success",
@@ -60,8 +63,11 @@ exports.register = async (req, res) => {
       data: {
         user: {
           fullName: user.fullName,
-          token,
+          email: user.email,
+          image: url + user.image,
           role: user.role,
+          phone: user.phone,
+          token,
         },
       },
     });
@@ -120,6 +126,8 @@ exports.login = async (req, res) => {
       secretKey
     );
 
+    const url = process.env.UPLOAD_URL;
+
     res.send({
       status: "success",
       message: "Login success",
@@ -127,6 +135,9 @@ exports.login = async (req, res) => {
         user: {
           fullName: validateUser.fullName,
           email: validateUser.email,
+          image: url + validateUser.image,
+          role: validateUser.role,
+          phone: validateUser.phone,
           token,
         },
       },

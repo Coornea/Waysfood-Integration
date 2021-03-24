@@ -34,6 +34,46 @@ exports.getUsers = async (req, res) => {
   }
 };
 
+exports.getUserById = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const rawUser = await User.findOne({
+      where: {
+        id,
+      },
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "password", "gender"],
+      },
+    });
+    if (rawUser == null)
+      return res.status(404).send({
+        status: "failed",
+        message: "User doesn't available",
+      });
+
+    const userString = JSON.stringify(rawUser);
+    const userObject = JSON.parse(userString);
+    const url = process.env.UPLOAD_URL;
+    const user = {
+      ...userObject,
+      image: url + userObject.image,
+    };
+    res.send({
+      status: "success",
+      message: "Success get user data",
+      data: {
+        user,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
+};
+
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
