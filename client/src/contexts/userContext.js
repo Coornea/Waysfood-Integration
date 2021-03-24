@@ -30,7 +30,7 @@ const reducer = (state, action) => {
       };
       break;
     case "LOGOUT":
-      localStorage.removeItem(`${LOCAL_KEY}-login`);
+      localStorage.removeItem("token");
       return {
         ...state,
         isLogin: false,

@@ -34,7 +34,7 @@ function IncomePage() {
   const [incomeList, setIncomeList] = useState([]);
 
   useEffect(() => {
-    userState.loggedUser.userrole !== 1 && history.push("/");
+    userState.loggedUser.role !== "partner" && history.push("/");
 
     // setIncomeList()
   }, []);

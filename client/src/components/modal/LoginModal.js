@@ -1,13 +1,16 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
-
+import * as yup from "yup";
 // State Management
 import { UserContext } from "../../contexts/userContext";
 
 // Components
 import CustomFormInput from "../reusable/CustomFormInput";
+
+// API
+import { API, setAuthToken } from "../../utils/api";
 
 export default function LoginModal({
   showLogin,
@@ -15,45 +18,59 @@ export default function LoginModal({
   handleShowRegister,
 }) {
   const history = useHistory();
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
+  const { email, password } = form;
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
-
-  const LOCAL_KEY = "ways-food-user";
 
   const openRegister = () => {
     handleCloseLogin();
     handleShowRegister();
   };
 
-  const handleLogin = (data) => {
-    const userData = JSON.parse(localStorage.getItem(LOCAL_KEY));
-    const checkUser = userData.find((user) => user.email == data.email);
-    if (checkUser) {
-      if (checkUser.password == data.password) {
-        localStorage.setItem(`${LOCAL_KEY}-login`, JSON.stringify(checkUser));
-        userDispatch({
-          type: "LOGIN",
-          payload: checkUser,
-        });
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
+  const onChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const userData = {
-      email: e.target.email.value,
-      password: e.target.password.value,
-    };
 
-    if (handleLogin(userData)) {
-      const userData = JSON.parse(localStorage.getItem(`${LOCAL_KEY}-login`));
-      userData.userrole == 1 ? history.push("/income") : history.push("/");
+    const schema = yup.object().shape({
+      email: yup.string().email().min(10).max(30).required(),
+      password: yup.string().min(5).max(20).required(),
+    });
+
+    try {
+      const validate = await schema.validate(form);
+    } catch (error) {
+      return console.log(error);
+    }
+
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+      const response = await API.post("/login", form, config);
+      console.log(response.data);
+      userDispatch({
+        type: "LOGIN",
+        payload: response.data.data.user,
+      });
+      setAuthToken(response.data.data.user.token);
+      setForm({
+        email: "",
+        password: "",
+      });
       handleCloseLogin();
+    } catch (err) {
+      console.log(err.response);
     }
   };
 
@@ -68,6 +85,8 @@ export default function LoginModal({
         <Form className="d-flex flex-column" onSubmit={handleSubmit}>
           <Form.Group controlId="email">
             <CustomFormInput
+              value={email}
+              onChange={(e) => onChange(e)}
               type="email"
               placeholder="Email"
               name="email"
@@ -77,6 +96,8 @@ export default function LoginModal({
 
           <Form.Group controlId="password">
             <CustomFormInput
+              value={password}
+              onChange={(e) => onChange(e)}
               type="password"
               placeholder="Password"
               name="password"

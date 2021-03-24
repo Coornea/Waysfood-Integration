@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 
 import { Container, Col, Row, Form, Button } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
@@ -9,6 +9,9 @@ import MapModal from "../modal/MapModal";
 import CustomFormInput from "../reusable/CustomFormInput";
 import CustomFormFile from "../reusable/CustomFormFile";
 
+// State Management
+import { UserContext } from "../../contexts/userContext";
+
 // Assets
 import iconMap from "../../assets/svg/map.svg";
 
@@ -17,7 +20,7 @@ import { pageInit } from "../../utils/animVariants";
 
 function EditProfilePage() {
   const history = useHistory();
-  const currentUser = JSON.parse(localStorage.getItem("ways-food-user-login"));
+  const { state: userState, dispatch: userDispatch } = useContext(UserContext);
 
   // Modal Handler
   const [show, setShow] = useState(false);
@@ -40,7 +43,8 @@ function EditProfilePage() {
         <Row className="mb-4">
           <Col xs={12}>
             <h1 className="heading font-weight-bold">
-              Edit Profile {currentUser.userrole == 1 && "Partner"}
+              Edit Profile{" "}
+              {userState.loggedUser.role === "partner" && "Partner"}
             </h1>
           </Col>
         </Row>
