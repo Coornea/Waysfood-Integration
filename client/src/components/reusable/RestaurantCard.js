@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { Col, Card } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
@@ -11,13 +11,17 @@ import { CartContext } from "../../contexts/cartContext";
 // Animation
 import { cardInit } from "../../utils/animVariants";
 
+// API
+import { API } from "../../utils/api";
+
 export default function RestaurantCard({
   handleShowLogin,
   handleShowAlert,
   data,
 }) {
   const history = useHistory();
-  const { id, title, range, photo } = data;
+  const [image, setImage] = useState("");
+  const { id, fullName, range } = data;
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
   const { state: cartState, dispatch: cartDispatch } = useContext(CartContext);
   const handleClick = () => {
@@ -36,20 +40,20 @@ export default function RestaurantCard({
           type: "CURRENT_RESTAURANT",
           payload: {
             id,
-            title,
+            fullName,
           },
         });
         history.push(`/detail/${id}`);
       } else {
         if (
           cartState.carts.length !== 0 &&
-          cartState.currentRestaurant.title === title
+          cartState.currentRestaurant.fullName === fullName
         ) {
           cartDispatch({
             type: "CURRENT_RESTAURANT",
             payload: {
               id,
-              title,
+              fullName,
             },
           });
           history.push(`/detail/${id}`);
@@ -61,6 +65,16 @@ export default function RestaurantCard({
       handleShowLogin();
     }
   };
+  const handleImage = async () => {
+    const response = await API.get(`/products/${id}`);
+    const firstImage = response?.data?.data?.products[0]?.image;
+    // setImage(response?.data?.data?.products[0].image);
+    firstImage ? setImage(firstImage) : setImage(data.image);
+  };
+
+  useEffect(() => {
+    handleImage();
+  }, []);
   return (
     <Col xs={12} md={6} lg={3} className="mb-4">
       <motion.div variants={cardInit} initial="hidden" animate="visible">
@@ -73,14 +87,14 @@ export default function RestaurantCard({
         >
           <Card.Img
             variant="top"
-            src={photo}
+            src={image}
             height="175"
             className="p-3"
             style={{ objectFit: "cover" }}
           />
           <Card.Body className="px-3 pt-0">
             <Card.Title className="heading font-weight-bolder">
-              {title}
+              {fullName}
             </Card.Title>
             <Card.Text className="heading">{range} KM</Card.Text>
           </Card.Body>

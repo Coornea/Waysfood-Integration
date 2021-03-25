@@ -17,7 +17,7 @@ export default function HeroDetail({ data }) {
             className="d-flex flex-column justify-content-center"
           >
             <h1 className="heading display-4 font-weight-bold text-white">
-              {data && data.title}
+              {data?.fullName}
             </h1>
             <p className="text-warning">Restaurant</p>
             <div className="bot-text mt-0 d-flex">

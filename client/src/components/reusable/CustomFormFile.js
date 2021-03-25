@@ -2,7 +2,7 @@ import { Form } from "react-bootstrap";
 
 import iconClip from "../../assets/svg/clip.svg";
 
-const CustomFormFile = ({ placeholder, name, ...rest }) => {
+const CustomFormFile = ({ placeholder, name, onChange, ...rest }) => {
   return (
     <>
       <Form.Label
@@ -26,7 +26,11 @@ const CustomFormFile = ({ placeholder, name, ...rest }) => {
           <img src={iconClip} alt="clip" />
         </span>
       </Form.Label>
-      <Form.File style={{ display: "none" }} name={name} />
+      <Form.File
+        onChange={(e) => onChange(e)}
+        style={{ display: "none" }}
+        name={name}
+      />
     </>
   );
 };

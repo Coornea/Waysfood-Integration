@@ -17,7 +17,7 @@ export default function PopularCard({
   handleShowAlert,
 }) {
   const history = useHistory();
-  const { id, logo, title } = data;
+  const { id, image, fullName } = data;
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
   const { state: cartState, dispatch: cartDispatch } = useContext(CartContext);
   const handleClick = () => {
@@ -27,20 +27,20 @@ export default function PopularCard({
           type: "CURRENT_RESTAURANT",
           payload: {
             id,
-            title,
+            fullName,
           },
         });
         history.push(`/detail/${id}`);
       } else {
         if (
           cartState.carts.length !== 0 &&
-          cartState.currentRestaurant.title === title
+          cartState.currentRestaurant.fullName === fullName
         ) {
           cartDispatch({
             type: "CURRENT_RESTAURANT",
             payload: {
               id,
-              title,
+              fullName,
             },
           });
           history.push(`/detail/${id}`);
@@ -68,13 +68,13 @@ export default function PopularCard({
           >
             <Col xs={3} className="text-center">
               <img
-                src={logo}
+                src={image}
                 style={{ width: "65px", height: "65px", objectFit: "cover" }}
-                alt={title}
+                alt={fullName}
               />
             </Col>
             <Col xs={9} className="my-auto text-center">
-              <h3 className="heading my-0 font-weight-bold">{title}</h3>
+              <h3 className="heading my-0 font-weight-bold">{fullName}</h3>
             </Col>
           </Row>
         </Container>

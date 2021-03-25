@@ -24,7 +24,9 @@ export default function Header({ handleShowLogin, handleShowRegister }) {
         </Navbar.Brand>
         <Nav className="mr-auto"></Nav>
 
-        {userState.isLogin ? (
+        {userState.loading ? (
+          <></>
+        ) : userState.isLogin ? (
           <ProfileButton />
         ) : (
           <NavButton

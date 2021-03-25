@@ -1,8 +1,9 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 
-import { Container, Col, Row, Form, Button } from "react-bootstrap";
+import { Container, Col, Row, Form, Button, Alert } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useMutation } from "react-query";
 
 // Components
 import MapModal from "../modal/MapModal";
@@ -18,19 +19,85 @@ import iconMap from "../../assets/svg/map.svg";
 // Animations
 import { pageInit } from "../../utils/animVariants";
 
+// API
+import { API, setAuthToken } from "../../utils/api";
+
 function EditProfilePage() {
   const history = useHistory();
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
+  const [form, setForm] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    image: null,
+  });
+  const { id } = userState.loggedUser;
+  const { fullName, email, password, image } = form;
+
+  // Load user data
+  const loadUserData = async () => {
+    setAuthToken(localStorage.token);
+    const response = await API.get(`/user/${id}`);
+    const user = response.data.data.user;
+    setForm({
+      ...form,
+      fullName: user.fullName,
+      email: user.email,
+    });
+  };
 
   // Modal Handler
   const [show, setShow] = useState(false);
   const handleMapClose = () => setShow(false);
   const handleMapShow = () => setShow(true);
 
+  const addUser = useMutation(async () => {
+    const body = new FormData();
+    const location = `${userState.orderLocation.lng},${userState.orderLocation.lat}`;
+
+    body.append("fullName", fullName);
+    body.append("email", email);
+    body.append("password", password);
+    body.append("location", location);
+    body.append("image", image);
+
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    };
+    const response = await API.patch(`/user/${id}`, body, config);
+    userDispatch({
+      type: "EDIT_SUCCESS",
+      payload: {
+        ...response.data.data.user,
+        token: localStorage.token,
+      },
+    });
+
+    setForm({
+      fullName: "",
+      email: "",
+      password: "",
+      image: null,
+    });
+  });
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    history.push("/profile");
+    addUser.mutate();
+    !addUser?.error && history.push("/profile");
   };
+
+  const onChange = (e) => {
+    const tempForm = { ...form };
+    tempForm[e.target.name] =
+      e.target.type === "file" ? e.target.files[0] : e.target.value;
+    setForm(tempForm);
+  };
+  useEffect(() => {
+    loadUserData();
+  }, []);
   return (
     <motion.div
       variants={pageInit}
@@ -46,6 +113,11 @@ function EditProfilePage() {
               Edit Profile{" "}
               {userState.loggedUser.role === "partner" && "Partner"}
             </h1>
+            {addUser.error?.response?.data && (
+              <Alert variant="danger">
+                {addUser.error?.response?.data?.message}
+              </Alert>
+            )}
           </Col>
         </Row>
         <Row>
@@ -58,6 +130,9 @@ function EditProfilePage() {
                       isBrown={true}
                       type="text"
                       placeholder="Full Name"
+                      name="fullName"
+                      value={fullName}
+                      onChange={(e) => onChange(e)}
                     />
                   </Form.Group>
                 </Col>
@@ -65,7 +140,8 @@ function EditProfilePage() {
                   <Form.Group controlId="inputFile">
                     <CustomFormFile
                       placeholder="Attach Image"
-                      name="inputFile"
+                      name="image"
+                      onChange={onChange}
                     />
                   </Form.Group>
                 </Col>
@@ -78,6 +154,9 @@ function EditProfilePage() {
                       isBrown={true}
                       type="email"
                       placeholder="Email"
+                      name="email"
+                      value={email}
+                      onChange={(e) => onChange(e)}
                     />
                   </Form.Group>
                 </Col>
@@ -89,6 +168,9 @@ function EditProfilePage() {
                       isBrown={true}
                       type="password"
                       placeholder="Password"
+                      name="password"
+                      value={password}
+                      onChange={(e) => onChange(e)}
                     />
                   </Form.Group>
                 </Col>
@@ -100,6 +182,8 @@ function EditProfilePage() {
                       isBrown={true}
                       type="text"
                       placeholder="Location"
+                      value={userState.orderPlace}
+                      disabled
                     />
                   </Form.Group>
                 </Col>

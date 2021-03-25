@@ -35,7 +35,6 @@ function IncomePage() {
 
   useEffect(() => {
     userState.loggedUser.role !== "partner" && history.push("/");
-
     // setIncomeList()
   }, []);
 

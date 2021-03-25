@@ -10,6 +10,7 @@ import {
   Alert,
 } from "react-bootstrap";
 import { motion } from "framer-motion";
+import { useQuery } from "react-query";
 
 // State Management
 import { UserContext } from "../../contexts/userContext";
@@ -25,8 +26,10 @@ import { dummyRestaurant } from "../../utils/data";
 // Animations
 import { pageInit } from "../../utils/animVariants";
 
+// API
+import { API } from "../../utils/api";
+
 export default function LandingPage({ handleShowLogin }) {
-  const [popularRestaurant, setPopularRestaurant] = useState([]);
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
 
   // Modal Handler
@@ -34,16 +37,13 @@ export default function LandingPage({ handleShowLogin }) {
   const handleCloseAlert = () => setShowAlert(false);
   const handleShowAlert = () => setShowAlert(true);
 
-  const handlePopularRestaurant = () => {
-    const sortedVisitRestaurant = dummyRestaurant
-      .sort((a, b) => parseFloat(b.totalvisited) - parseFloat(a.totalvisited))
-      .slice(0, 4);
-    setPopularRestaurant(sortedVisitRestaurant);
-  };
-
-  useEffect(() => {
-    handlePopularRestaurant();
-  }, []);
+  const { data: RestaurantsData, loading, error, refetch } = useQuery(
+    "restaurantsCache",
+    async () => {
+      const response = await API.get("/partners");
+      return response;
+    }
+  );
 
   return (
     <motion.div
@@ -63,14 +63,17 @@ export default function LandingPage({ handleShowLogin }) {
             </Col>
           </Row>
           <Row className="mb-5 py-0">
-            {popularRestaurant.map((popular) => (
-              <PopularCard
-                data={popular}
-                key={popular.id}
-                handleShowLogin={handleShowLogin}
-                handleShowAlert={handleShowAlert}
-              />
-            ))}
+            {RestaurantsData?.data?.data?.partners?.map(
+              (restaurant, index) =>
+                index <= 3 && (
+                  <PopularCard
+                    data={restaurant}
+                    key={restaurant.id}
+                    handleShowLogin={handleShowLogin}
+                    handleShowAlert={handleShowAlert}
+                  />
+                )
+            )}
           </Row>
           <Row>
             <Col sm={12}>
@@ -80,17 +83,14 @@ export default function LandingPage({ handleShowLogin }) {
             </Col>
           </Row>
           <Row>
-            {dummyRestaurant.map(
-              (restaurant) =>
-                restaurant.range <= 2 && (
-                  <RestaurantCard
-                    key={restaurant.id}
-                    handleShowLogin={handleShowLogin}
-                    handleShowAlert={handleShowAlert}
-                    data={restaurant}
-                  />
-                )
-            )}
+            {RestaurantsData?.data?.data?.partners?.map((restaurant) => (
+              <RestaurantCard
+                key={restaurant.id}
+                handleShowLogin={handleShowLogin}
+                handleShowAlert={handleShowAlert}
+                data={restaurant}
+              />
+            ))}
           </Row>
         </Container>
       </div>

@@ -1,4 +1,5 @@
 const { User, Product } = require("../../models");
+const Joi = require("joi");
 
 exports.getAllProducts = async (req, res) => {
   try {
@@ -152,6 +153,24 @@ exports.addProduct = async (req, res) => {
       return res.status(400).send({
         status: "failed",
         message: "Please insert image to upload",
+      });
+
+    const { title, price } = req.body;
+
+    const schema = Joi.object({
+      title: Joi.string().required(),
+      price: Joi.number().required(),
+    });
+
+    const { error } = schema.validate({
+      title,
+      price,
+    });
+
+    if (error)
+      return res.status(400).send({
+        status: "validation failed",
+        message: error.details[0].message,
       });
 
     const createProduct = await Product.create({

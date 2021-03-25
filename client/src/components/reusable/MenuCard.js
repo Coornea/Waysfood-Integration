@@ -12,7 +12,7 @@ import { menuCardInit } from "../../utils/animVariants";
 export default function MenuCard({ data }) {
   const { state: cartState, dispatch: cartDispatch } = useContext(CartContext);
 
-  const { title, price, photo } = data;
+  const { title, price, image } = data;
   const handleOrder = () => {
     cartDispatch({
       type: "ADD_CART",
@@ -32,7 +32,7 @@ export default function MenuCard({ data }) {
         >
           <Card.Img
             variant="top"
-            src={photo}
+            src={image}
             height="175"
             className="p-3"
             style={{ objectFit: "cover" }}

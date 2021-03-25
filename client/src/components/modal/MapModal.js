@@ -25,8 +25,7 @@ function MapModal({ show, handleMapClose, from, data }) {
 
   const fetchLocation = async () => {
     const { lng, lat } = userState.orderLocation;
-    const token =
-      "pk.eyJ1IjoiaWxoYW0yNSIsImEiOiJja20yczc0dm0zOWczMndwMzVmdmJ1bjI4In0.1l2Zgxjy5R0iW2SlySO_fQ";
+    const token = process.env.REACT_APP_MAPBOX_TOKEN;
     const apiUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?limit=1&access_token=${token}`;
 
     const api = await fetch(apiUrl);
@@ -34,6 +33,14 @@ function MapModal({ show, handleMapClose, from, data }) {
 
     setPlace(response.features[0].text);
     setAddress(response.features[0].place_name);
+  };
+
+  const handleLocation = () => {
+    handleMapClose();
+    userDispatch({
+      type: "ORDER_PLACE",
+      payload: place,
+    });
   };
 
   const renderDialog = () => {
@@ -79,7 +86,7 @@ function MapModal({ show, handleMapClose, from, data }) {
             <Row>
               <Col>
                 <Button
-                  onClick={handleMapClose}
+                  onClick={handleLocation}
                   variant="brown"
                   className="w-100"
                 >
@@ -190,7 +197,7 @@ function MapModal({ show, handleMapClose, from, data }) {
             <Row>
               <Col>
                 <Button
-                  onClick={handleMapClose}
+                  onClick={handleLocation}
                   variant="brown"
                   className="w-100"
                 >

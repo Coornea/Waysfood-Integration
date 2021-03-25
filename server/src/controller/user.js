@@ -1,4 +1,5 @@
 const { User, Product } = require("../../models/");
+const bcrypt = require("bcrypt");
 
 exports.getUsers = async (req, res) => {
   try {
@@ -34,9 +35,47 @@ exports.getUsers = async (req, res) => {
   }
 };
 
+exports.getPartners = async (req, res) => {
+  try {
+    const rawPartners = await User.findAll({
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "password", "gender"],
+      },
+      where: {
+        role: "partner",
+      },
+    });
+
+    const partnersString = JSON.stringify(rawPartners);
+    const partnersObject = JSON.parse(partnersString);
+
+    const partners = partnersObject.map((user) => {
+      const url = process.env.UPLOAD_URL;
+      return {
+        ...user,
+        image: url + user.image,
+      };
+    });
+    res.send({
+      status: "success",
+      message: "Success get all partners data",
+      data: {
+        partners,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
+};
+
 exports.getUserById = async (req, res) => {
   try {
-    const { id } = req.user;
+    const { id } = req.params;
+
     const rawUser = await User.findOne({
       where: {
         id,
@@ -120,9 +159,13 @@ exports.updateUser = async (req, res) => {
         message: "User doesn't have access",
       });
 
+    const hashStrength = 10;
+    const hashedPassword = await bcrypt.hash(req.body.password, hashStrength);
+
     const editUser = await User.update(
       {
         ...req.body,
+        password: hashedPassword,
         image: req.files.image && req.files.image[0].filename,
       },
       {
