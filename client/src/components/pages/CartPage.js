@@ -21,10 +21,12 @@ import MapModal from "../modal/MapModal";
 
 // Assets
 import iconMap from "../../assets/svg/map.svg";
-import iconMapPointer from "../../assets/svg/map-pointer.svg";
 
 // Animations
 import { pageInit } from "../../utils/animVariants";
+
+// API
+import { API, setAuthToken } from "../../utils/api";
 
 export default function CartPage() {
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
@@ -103,6 +105,22 @@ export default function CartPage() {
     });
   }, []);
 
+  const handleOrder = async () => {
+    // console.log(cartState.carts);
+    const products = {
+      products: [
+        ...cartState.carts.map((cart) => ({
+          id: cart.id,
+          qty: cart.qty,
+        })),
+      ],
+    };
+    setAuthToken(localStorage.token);
+    const response = await API.post("/transaction", products);
+    console.log(response.data);
+
+    // handleMapDeliveryShow();
+  };
   if (!userState.isLogin) {
     history.push("/");
     return null;
@@ -133,7 +151,7 @@ export default function CartPage() {
           <Col sm={12} lg={9} className="mb-2">
             <InputGroup>
               <FormControl
-                value="Harbour Building"
+                value={userState.orderPlace}
                 size="lg"
                 style={{
                   fontSize: "0.9em",
@@ -215,7 +233,7 @@ export default function CartPage() {
                 <Button
                   variant="brown"
                   className="w-100 "
-                  onClick={handleMapDeliveryShow}
+                  onClick={handleOrder}
                 >
                   Order
                 </Button>

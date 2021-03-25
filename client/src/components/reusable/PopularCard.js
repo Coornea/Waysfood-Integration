@@ -21,6 +21,8 @@ export default function PopularCard({
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
   const { state: cartState, dispatch: cartDispatch } = useContext(CartContext);
   const handleClick = () => {
+    console.log(data);
+
     if (userState.isLogin) {
       if (cartState.carts.length == 0) {
         cartDispatch({

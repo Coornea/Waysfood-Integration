@@ -249,7 +249,7 @@ exports.getUserTransaction = async (req, res) => {
           ...trans.order.map((order) => ({
             // id: order.id, // uncomment to use order id
             ...order.product,
-            image: url + order.product,
+            image: url + order.product.image,
             qty: order.qty,
           })),
         ],
@@ -356,7 +356,7 @@ exports.addTransaction = async (req, res) => {
     };
 
     res.send({
-      status: "on the way",
+      status: "waiting for approve",
       message: "Success add transaction",
       data: {
         transaction,

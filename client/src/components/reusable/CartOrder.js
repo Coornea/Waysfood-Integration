@@ -12,7 +12,7 @@ import iconRemove from "../../assets/svg/remove.svg";
 export default function CartOrder({ data }) {
   const { state: cartState, dispatch: cartDispatch } = useContext(CartContext);
 
-  const { id, photo, title, price, qty } = data;
+  const { id, image, title, price, qty } = data;
 
   const handleRemoveCart = () => {
     cartDispatch({
@@ -45,7 +45,7 @@ export default function CartOrder({ data }) {
       <Row>
         <Col xs={3} md={2}>
           <img
-            src={photo}
+            src={image}
             alt="order 1"
             style={{
               backgroundSize: "cover",

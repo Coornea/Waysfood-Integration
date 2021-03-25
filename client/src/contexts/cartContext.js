@@ -90,7 +90,7 @@ const reducer = (state, action) => {
     case "CURRENT_RESTAURANT":
       return {
         ...state,
-        currentRestaurant: { id: payload.id, title: payload.fullName },
+        currentRestaurant: { id: payload.id, fullName: payload.fullName },
       };
       break;
     case "ADD_TRANSACTION":
