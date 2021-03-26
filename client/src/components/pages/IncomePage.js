@@ -11,7 +11,7 @@ import {
 } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useQuery } from "react-query";
+import { useQuery, useMutation } from "react-query";
 
 // State Management
 import { UserContext } from "../../contexts/userContext";
@@ -46,69 +46,100 @@ function IncomePage() {
     }
   );
 
-  // const [incomeList, setIncomeList] = useState([]);
-
   useEffect(() => {
     userState.loggedUser.role !== "partner" && history.push("/");
-    // setIncomeList()
   }, []);
 
-  // useEffect(() => {
-  //   const filteredIncome = cartState.transactions.filter(
-  //     (income) => income.restaurant.title == userState.loggedUser.fullname
-  //   );
-  //   setIncomeList(filteredIncome);
-  // }, [cartState.transactions]);
+  const approve = useMutation(async (payload) => {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const body = {
+      status: payload.status,
+    };
+    setAuthToken(localStorage.token);
 
-  /**
-   *
-   * status :
-   * - 0 for "Cancel"
-   * - 1 for "Waiting Approve"
-   * - 2 for "On The Way"
-   * - 3 for "Success"
-   */
-  const handleStatus = (status) => {
-    switch (status) {
-      case "cancel":
-        return <p className="text-danger">Cancel</p>;
-        break;
-      case "waiting":
-        return <p className="text-warning">Waiting Approve</p>;
-        break;
-      case "otw":
-        return <p className="text-info">On The Way</p>;
-        break;
-      case "success":
-        return <p className="text-success">Success</p>;
-        break;
+    const response = await API.patch(
+      `/transaction/${payload.id}`,
+      body,
+      config
+    );
+    console.log(response.data);
+    refetch();
+  });
 
-      default:
-        break;
-    }
+  const handleApprove = (id, status) => {
+    // console.log(id, status);
+    approve.mutate({ id, status });
   };
-  const handleAction = (status) => {
+
+  const handleAction = (id, status) => {
     switch (status) {
       case "cancel":
-        return <img src={actionCancel} height="20" alt="cancel action" />;
+        return (
+          <>
+            <td className="text-center">
+              <p className="text-danger">Cancel</p>
+            </td>
+            <td className="text-center">
+              <img src={actionCancel} height="20" alt="cancel action" />
+            </td>
+          </>
+        );
         break;
       case "waiting":
         return (
-          <div>
-            <Button size="sm" variant="danger" className="mr-0 mr-lg-2">
-              Cancel
-            </Button>
-            <Button size="sm" variant="success">
-              Approve
-            </Button>
-          </div>
+          <>
+            <td className="text-center">
+              <p className="text-warning">Waiting Approve</p>
+            </td>
+            <td className="text-center">
+              <div>
+                <Button
+                  onClick={() => handleApprove(id, "cancel")}
+                  size="sm"
+                  variant="danger"
+                  className="mr-0 mr-lg-2"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => handleApprove(id, "otw")}
+                  size="sm"
+                  variant="success"
+                >
+                  Approve
+                </Button>
+              </div>
+            </td>
+          </>
         );
         break;
       case "otw":
-        return <img src={actionSuccess} height="20" alt="success action" />;
+        return (
+          <>
+            <td className="text-center">
+              <p className="text-info">On The Way</p>
+            </td>
+            <td className="text-center">
+              <img src={actionSuccess} height="20" alt="success action" />
+            </td>
+          </>
+        );
         break;
       case "success":
-        return <img src={actionSuccess} height="20" alt="success action" />;
+        return (
+          <>
+            <td className="text-center">
+              <p className="text-success">Success</p>;
+            </td>
+            <td className="text-center">
+              <img src={actionSuccess} height="20" alt="success action" />
+            </td>
+          </>
+        );
         break;
 
       default:
@@ -165,12 +196,8 @@ function IncomePage() {
                           {/* {`${income.listProducts}, `} */}
                         </div>
                       </td>
-                      <td className="text-center">
-                        {handleStatus(income.status)}
-                      </td>
-                      <td className="text-center">
-                        {handleAction(income.status)}
-                      </td>
+
+                      {handleAction(income.id, income.status)}
                     </tr>
                   ))}
                 </tbody>

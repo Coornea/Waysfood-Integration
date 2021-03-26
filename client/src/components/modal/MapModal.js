@@ -13,7 +13,7 @@ import MapRender from "../reusable/MapRender";
 // Assets
 import iconMapPointer from "../../assets/svg/map-pointer.svg";
 
-function MapModal({ show, handleMapClose, from, data }) {
+function MapModal({ show, handleMapClose, from }) {
   const history = useHistory();
   const [isFinished, setIsFinished] = useState(false);
 
@@ -215,19 +215,10 @@ function MapModal({ show, handleMapClose, from, data }) {
   };
 
   useEffect(() => {
-    // from === "order" &&
-    //   setTimeout(() => {
-    //     setIsFinished(true);
-    //   }, 5000);
-
     fetchLocation();
   }, [userState.orderLocation]);
 
   const handleFinished = () => {
-    cartDispatch({
-      type: "ADD_TRANSACTION",
-      payload: data,
-    });
     cartDispatch({
       type: "EMPTY_CART",
     });

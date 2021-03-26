@@ -474,7 +474,7 @@ exports.updateTransaction = async (req, res) => {
     const { id } = req.params;
 
     const editTransaction = await Transaction.update(
-      { ...req.body },
+      { status: req.body.status },
       {
         where: {
           id,

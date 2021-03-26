@@ -248,19 +248,6 @@ export default function CartPage() {
         show={showDelivery}
         handleMapClose={handleMapDeliveryClose}
         from="order"
-        data={{
-          id: Math.floor(Math.random() * Math.floor(100)),
-          total,
-          user: {
-            id: userState.loggedUser.id,
-            fullname: userState.loggedUser.fullname,
-            location: userState.loggedUser.location,
-          },
-          restaurant: cartState.currentRestaurant,
-          ...currentDate,
-          listProducts,
-          status: 1,
-        }}
       />
     </motion.div>
   );

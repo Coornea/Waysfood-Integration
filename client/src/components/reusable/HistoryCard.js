@@ -18,7 +18,7 @@ function HistoryCard({ data }) {
   const countPrice = () => {
     let tmpPrice = 0;
     order.map((menu) => {
-      tmpPrice += tmpPrice + menu.price * menu.qty;
+      tmpPrice += menu.price * menu.qty;
     });
     console.log(tmpPrice);
     setPrice(tmpPrice);

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery } from "react-query";
@@ -115,6 +115,7 @@ function ProfilePage() {
               </Col>
             </Row>
             <Row>
+              {loading && <Spinner animation="border" variant="warning" />}
               {transactionsData?.data?.transactions?.map((trans, index) => (
                 <HistoryCard key={trans.id} data={trans} />
               ))}
