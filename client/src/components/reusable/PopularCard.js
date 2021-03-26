@@ -71,7 +71,12 @@ export default function PopularCard({
             <Col xs={3} className="text-center">
               <img
                 src={image}
-                style={{ width: "65px", height: "65px", objectFit: "cover" }}
+                style={{
+                  width: "65px",
+                  height: "65px",
+                  objectFit: "cover",
+                  borderRadius: "50%",
+                }}
                 alt={fullName}
               />
             </Col>

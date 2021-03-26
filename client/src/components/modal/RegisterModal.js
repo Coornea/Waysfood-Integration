@@ -81,7 +81,7 @@ export default function RegisterModal({
       });
       handleCloseRegister();
     } catch (error) {
-      return console.log(error.response.data.message);
+      return console.log(error?.response?.data?.message);
     }
   };
 

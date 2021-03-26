@@ -75,7 +75,12 @@ router.get(
 );
 router.post("/transaction", authenticated, checkUser, addTransaction);
 router.delete("/transaction/:id", authenticated, checkUser, deleteTransaction);
-router.patch("/transaction/:id", authenticated, checkUser, updateTransaction);
+router.patch(
+  "/transaction/:id",
+  authenticated,
+  checkPartner,
+  updateTransaction
+);
 
 router.post("/register", register);
 router.post("/login", login);

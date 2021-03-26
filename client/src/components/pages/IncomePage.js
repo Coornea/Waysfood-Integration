@@ -11,6 +11,7 @@ import {
 } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useQuery } from "react-query";
 
 // State Management
 import { UserContext } from "../../contexts/userContext";
@@ -26,24 +27,38 @@ import { dummyIncome } from "../../utils/data";
 // Animations
 import { pageInit } from "../../utils/animVariants";
 
+// API
+import { API, setAuthToken } from "../../utils/api";
+
 function IncomePage() {
   const history = useHistory();
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
   const { state: cartState, dispatch: cartDispatch } = useContext(CartContext);
 
-  const [incomeList, setIncomeList] = useState([]);
+  const { id } = userState.loggedUser;
+
+  const { data: IncomeData, loading, error, refetch } = useQuery(
+    "incomeCache",
+    async () => {
+      setAuthToken(localStorage.token);
+      const response = await API.get(`/transactions/${id}`);
+      return response.data;
+    }
+  );
+
+  // const [incomeList, setIncomeList] = useState([]);
 
   useEffect(() => {
     userState.loggedUser.role !== "partner" && history.push("/");
     // setIncomeList()
   }, []);
 
-  useEffect(() => {
-    const filteredIncome = cartState.transactions.filter(
-      (income) => income.restaurant.title == userState.loggedUser.fullname
-    );
-    setIncomeList(filteredIncome);
-  }, [cartState.transactions]);
+  // useEffect(() => {
+  //   const filteredIncome = cartState.transactions.filter(
+  //     (income) => income.restaurant.title == userState.loggedUser.fullname
+  //   );
+  //   setIncomeList(filteredIncome);
+  // }, [cartState.transactions]);
 
   /**
    *
@@ -55,16 +70,16 @@ function IncomePage() {
    */
   const handleStatus = (status) => {
     switch (status) {
-      case 0:
+      case "cancel":
         return <p className="text-danger">Cancel</p>;
         break;
-      case 1:
+      case "waiting":
         return <p className="text-warning">Waiting Approve</p>;
         break;
-      case 2:
+      case "otw":
         return <p className="text-info">On The Way</p>;
         break;
-      case 3:
+      case "success":
         return <p className="text-success">Success</p>;
         break;
 
@@ -74,10 +89,10 @@ function IncomePage() {
   };
   const handleAction = (status) => {
     switch (status) {
-      case 0:
+      case "cancel":
         return <img src={actionCancel} height="20" alt="cancel action" />;
         break;
-      case 1:
+      case "waiting":
         return (
           <div>
             <Button size="sm" variant="danger" className="mr-0 mr-lg-2">
@@ -89,10 +104,10 @@ function IncomePage() {
           </div>
         );
         break;
-      case 2:
+      case "otw":
         return <img src={actionSuccess} height="20" alt="success action" />;
         break;
-      case 3:
+      case "success":
         return <img src={actionSuccess} height="20" alt="success action" />;
         break;
 
@@ -133,11 +148,11 @@ function IncomePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {incomeList.map((income, index) => (
+                  {IncomeData?.data?.transactions.map((income, index) => (
                     <tr>
                       <td>{index + 1}</td>
-                      <td>{income.user.fullname}</td>
-                      <td>{income.user.location}</td>
+                      <td>{income.userOrder.fullName}</td>
+                      <td>{income.userOrder.location}</td>
                       <td>
                         <div
                           style={{
@@ -147,7 +162,7 @@ function IncomePage() {
                             textOverflow: "ellipsis",
                           }}
                         >
-                          {`${income.listProducts}, `}
+                          {/* {`${income.listProducts}, `} */}
                         </div>
                       </td>
                       <td className="text-center">

@@ -17,13 +17,16 @@ module.exports = (sequelize, DataTypes) => {
         as: "userOrder",
         foreignKey: "userId",
       });
-
-      // Transaction.hasMany(models.Product);
+      Transaction.belongsTo(models.User, {
+        as: "partnerOrder",
+        foreignKey: "partnerId",
+      });
     }
   }
   Transaction.init(
     {
       userId: DataTypes.INTEGER,
+      partnerId: DataTypes.INTEGER,
       status: DataTypes.STRING,
     },
     {

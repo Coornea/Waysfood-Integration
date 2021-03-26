@@ -21,6 +21,21 @@ exports.getTransactionsByPartner = async (req, res) => {
           },
         },
         {
+          model: User,
+          as: "partnerOrder",
+          attributes: {
+            exclude: [
+              "createdAt",
+              "updatedAt",
+              "password",
+              "phone",
+              "image",
+              "role",
+              "gender",
+            ],
+          },
+        },
+        {
           model: Order,
           as: "order",
           include: [
@@ -49,7 +64,7 @@ exports.getTransactionsByPartner = async (req, res) => {
         },
       ],
       attributes: {
-        exclude: ["createdAt", "updatedAt", "userId"],
+        exclude: ["createdAt", "updatedAt", "userId", "partnerId"],
       },
     });
 
@@ -110,6 +125,21 @@ exports.getDetailTransaction = async (req, res) => {
           },
         },
         {
+          model: User,
+          as: "partnerOrder",
+          attributes: {
+            exclude: [
+              "createdAt",
+              "updatedAt",
+              "password",
+              "phone",
+              "image",
+              "role",
+              "gender",
+            ],
+          },
+        },
+        {
           model: Order,
           as: "order",
           include: [
@@ -135,7 +165,7 @@ exports.getDetailTransaction = async (req, res) => {
         },
       ],
       attributes: {
-        exclude: ["createdAt", "updatedAt", "userId"],
+        exclude: ["createdAt", "updatedAt", "userId", "partnerId"],
       },
       where: {
         id,
@@ -206,6 +236,21 @@ exports.getUserTransaction = async (req, res) => {
           },
         },
         {
+          model: User,
+          as: "partnerOrder",
+          attributes: {
+            exclude: [
+              "createdAt",
+              "updatedAt",
+              "password",
+              "phone",
+              "image",
+              "role",
+              "gender",
+            ],
+          },
+        },
+        {
           model: Order,
           as: "order",
           include: [
@@ -231,7 +276,7 @@ exports.getUserTransaction = async (req, res) => {
         },
       ],
       attributes: {
-        exclude: ["createdAt", "updatedAt", "userId"],
+        exclude: ["createdAt", "updatedAt", "userId", "partnerId"],
       },
     });
 
@@ -274,11 +319,12 @@ exports.getUserTransaction = async (req, res) => {
 
 exports.addTransaction = async (req, res) => {
   try {
-    const { products } = req.body;
+    const { products, partnerId } = req.body;
     const { id } = req.user;
 
     const createTransaction = await Transaction.create({
       userId: id,
+      partnerId,
       status: "waiting",
     });
 
@@ -295,6 +341,21 @@ exports.addTransaction = async (req, res) => {
         {
           model: User,
           as: "userOrder",
+          attributes: {
+            exclude: [
+              "createdAt",
+              "updatedAt",
+              "password",
+              "phone",
+              "image",
+              "role",
+              "gender",
+            ],
+          },
+        },
+        {
+          model: User,
+          as: "partnerOrder",
           attributes: {
             exclude: [
               "createdAt",
@@ -332,7 +393,7 @@ exports.addTransaction = async (req, res) => {
         },
       ],
       attributes: {
-        exclude: ["createdAt", "updatedAt", "userId"],
+        exclude: ["createdAt", "updatedAt", "userId", "partnerId"],
       },
       where: {
         id: createTransaction.id,
@@ -439,6 +500,21 @@ exports.updateTransaction = async (req, res) => {
           },
         },
         {
+          model: User,
+          as: "partnerOrder",
+          attributes: {
+            exclude: [
+              "createdAt",
+              "updatedAt",
+              "password",
+              "phone",
+              "image",
+              "role",
+              "gender",
+            ],
+          },
+        },
+        {
           model: Order,
           as: "order",
           include: [
@@ -464,7 +540,7 @@ exports.updateTransaction = async (req, res) => {
         },
       ],
       attributes: {
-        exclude: ["createdAt", "updatedAt", "userId"],
+        exclude: ["createdAt", "updatedAt", "userId", "partnerId"],
       },
       where: {
         id,

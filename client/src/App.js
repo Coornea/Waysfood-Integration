@@ -52,7 +52,7 @@ function App() {
         });
       }
 
-      let payload = response.data.data.user;
+      let payload = response?.data?.data?.user;
       payload.token = localStorage.token;
 
       userDispatch({

@@ -108,6 +108,7 @@ export default function CartPage() {
   const handleOrder = async () => {
     // console.log(cartState.carts);
     const products = {
+      partnerId: cartState.currentRestaurant.id,
       products: [
         ...cartState.carts.map((cart) => ({
           id: cart.id,

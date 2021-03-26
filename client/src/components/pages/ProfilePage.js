@@ -3,6 +3,7 @@ import { useContext } from "react";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useQuery } from "react-query";
 
 // State Management
 import { UserContext } from "../../contexts/userContext";
@@ -18,10 +19,25 @@ import bensu from "../../assets/img/restaurant/bensu.png";
 // Animations
 import { pageInit } from "../../utils/animVariants";
 
+// API
+import { API, setAuthToken } from "../../utils/api";
+
 function ProfilePage() {
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
   const { state: cartState, dispatch: cartDispatch } = useContext(CartContext);
-  const { fullName, email, image, role, phone } = userState.loggedUser;
+  const { id, fullName, email, image, role, phone } = userState.loggedUser;
+
+  const { data: transactionsData, loading, error, refetch } = useQuery(
+    "transactionsCache",
+    async () => {
+      setAuthToken(localStorage.token);
+      const response = await API.get(
+        role === "partner" ? `/transactions/${id}` : `/my-transactions/${id}`
+      );
+      console.log(response.data);
+      return response.data;
+    }
+  );
 
   return (
     <motion.div
@@ -94,20 +110,14 @@ function ProfilePage() {
             <Row className="mb-4">
               <Col>
                 <h1 className="heading font-weight-bold">
-                  History {role ? "Order" : "Transaction"}
+                  History {role === "partner" ? "Order" : "Transaction"}
                 </h1>
               </Col>
             </Row>
             <Row>
-              {cartState.transactions.map((tran, index) =>
-                userState.loggedUser.role == 1
-                  ? tran.restaurant.title === userState.loggedUser.fullname && (
-                      <HistoryCard key={index} role={role} data={tran} />
-                    )
-                  : tran.user.fullname === userState.loggedUser.fullname && (
-                      <HistoryCard key={index} role={role} data={tran} />
-                    )
-              )}
+              {transactionsData?.data?.transactions?.map((trans, index) => (
+                <HistoryCard key={trans.id} data={trans} />
+              ))}
             </Row>
           </Col>
         </Row>
