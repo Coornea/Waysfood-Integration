@@ -1,6 +1,7 @@
-import { useState, useContext } from "react";
+import { useContext } from "react";
 
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button, Form, Alert } from "react-bootstrap";
+import { useMutation } from "react-query";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
@@ -22,6 +23,7 @@ export default function RegisterModal({
   handleShowLogin,
 }) {
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
+
   const { control, register, handleSubmit, errors } = useForm({
     resolver: yupResolver(registerSchema),
   });
@@ -31,25 +33,23 @@ export default function RegisterModal({
     handleShowLogin();
   };
 
-  const handleRegister = async (data) => {
-    try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-      const response = await API.post("/register", data, config);
-      console.log(response.data);
-      userDispatch({
-        type: "LOGIN",
-        payload: response.data.data.user,
-      });
-      setAuthToken(response.data.data.user.token);
+  const handleRegister = useMutation(async (payload) => {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const response = await API.post("/register", payload, config);
+    userDispatch({
+      type: "LOGIN",
+      payload: response.data.data.user,
+    });
+    setAuthToken(response.data.data.user.token);
+    response.data.status === "success" && handleCloseRegister();
+  });
 
-      handleCloseRegister();
-    } catch (error) {
-      return console.log(error?.response?.data?.message);
-    }
+  const onSubmit = async (data) => {
+    handleRegister.mutate(data);
   };
 
   return (
@@ -60,10 +60,12 @@ export default function RegisterModal({
     >
       <Modal.Body className="px-4 py-5">
         <h2 className="text-warning mb-4">Register</h2>
-        <Form
-          className="d-flex flex-column"
-          onSubmit={handleSubmit(handleRegister)}
-        >
+        {handleRegister?.error?.response?.data && (
+          <Alert variant="danger">
+            {handleRegister?.error?.response?.data?.message}
+          </Alert>
+        )}
+        <Form className="d-flex flex-column" onSubmit={handleSubmit(onSubmit)}>
           <Form.Group controlId="email">
             <Controller
               as={

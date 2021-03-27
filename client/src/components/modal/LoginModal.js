@@ -1,7 +1,8 @@
 import { useContext, useState } from "react";
 
-import { Modal, Button, Form, Row, Col } from "react-bootstrap";
+import { Modal, Button, Form, Alert } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
+import { useMutation } from "react-query";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 // State Management
@@ -34,24 +35,23 @@ export default function LoginModal({
     handleShowRegister();
   };
 
-  const handleLogin = async (data) => {
-    try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-      const response = await API.post("/login", data, config);
-      userDispatch({
-        type: "LOGIN",
-        payload: response.data.data.user,
-      });
-      setAuthToken(response.data.data.user.token);
+  const handleLogin = useMutation(async (payload) => {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const response = await API.post("/login", payload, config);
+    setAuthToken(response.data.data.user.token);
+    userDispatch({
+      type: "LOGIN",
+      payload: response.data.data.user,
+    });
+    response.data.status === "success" && handleCloseLogin();
+  });
 
-      handleCloseLogin();
-    } catch (err) {
-      console.log(err.response);
-    }
+  const onSubmit = async (data) => {
+    handleLogin.mutate(data);
   };
 
   return (
@@ -62,10 +62,12 @@ export default function LoginModal({
     >
       <Modal.Body className="px-4 py-5">
         <h2 className="text-warning mb-4">Login</h2>
-        <Form
-          className="d-flex flex-column"
-          onSubmit={handleSubmit(handleLogin)}
-        >
+        {handleLogin?.error?.response?.data && (
+          <Alert variant="danger">
+            {handleLogin?.error?.response?.data?.message}
+          </Alert>
+        )}
+        <Form className="d-flex flex-column" onSubmit={handleSubmit(onSubmit)}>
           <Form.Group controlId="email">
             <Controller
               as={
@@ -78,6 +80,7 @@ export default function LoginModal({
               }
               name="email"
               control={control}
+              defaultValue=""
             />
             {errors.email && (
               <Form.Control.Feedback type="invalid">
@@ -98,6 +101,7 @@ export default function LoginModal({
               }
               name="password"
               control={control}
+              defaultValue=""
             />
             {errors.password && (
               <Form.Control.Feedback type="invalid">
