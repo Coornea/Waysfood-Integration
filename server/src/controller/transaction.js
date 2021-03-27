@@ -66,6 +66,7 @@ exports.getTransactionsByPartner = async (req, res) => {
       attributes: {
         exclude: ["updatedAt", "userId", "partnerId"],
       },
+      order: [["createdAt", "DESC"]],
     });
 
     const transactionsString = JSON.stringify(rawTransactions);
@@ -278,6 +279,7 @@ exports.getUserTransaction = async (req, res) => {
       attributes: {
         exclude: ["updatedAt", "userId", "partnerId"],
       },
+      order: [["createdAt", "DESC"]],
     });
 
     const transactionsString = JSON.stringify(rawTransactions);

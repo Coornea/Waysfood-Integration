@@ -11,11 +11,7 @@ import { CartContext } from "../../contexts/cartContext";
 // Animation
 import { cardInit } from "../../utils/animVariants";
 
-export default function PopularCard({
-  data,
-  handleShowLogin,
-  handleShowAlert,
-}) {
+export default function PopularCard({ data, handleShowLogin, showAlert }) {
   const history = useHistory();
   const { id, image, fullName } = data;
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
@@ -47,7 +43,7 @@ export default function PopularCard({
           });
           history.push(`/detail/${id}`);
         } else {
-          handleShowAlert();
+          showAlert();
         }
       }
     } else {

@@ -14,11 +14,7 @@ import { cardInit } from "../../utils/animVariants";
 // API
 import { API } from "../../utils/api";
 
-export default function RestaurantCard({
-  handleShowLogin,
-  handleShowAlert,
-  data,
-}) {
+export default function RestaurantCard({ handleShowLogin, data, showAlert }) {
   const history = useHistory();
   const [image, setImage] = useState("");
   const { id, fullName, range } = data;
@@ -58,7 +54,7 @@ export default function RestaurantCard({
           });
           history.push(`/detail/${id}`);
         } else {
-          handleShowAlert();
+          showAlert();
         }
       }
     } else {

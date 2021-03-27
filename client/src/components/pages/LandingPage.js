@@ -11,6 +11,7 @@ import {
 } from "react-bootstrap";
 import { motion } from "framer-motion";
 import { useQuery } from "react-query";
+import SweetAlert from "react-bootstrap-sweetalert";
 
 // State Management
 import { UserContext } from "../../contexts/userContext";
@@ -32,10 +33,24 @@ import { API } from "../../utils/api";
 export default function LandingPage({ handleShowLogin }) {
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
 
-  // Modal Handler
-  const [showAlert, setShowAlert] = useState(false);
-  const handleCloseAlert = () => setShowAlert(false);
-  const handleShowAlert = () => setShowAlert(true);
+  const [alert, setAlert] = useState(null);
+  const hideAlert = () => {
+    setAlert(null);
+  };
+  const showAlert = () => {
+    setAlert(
+      <SweetAlert
+        warning
+        confirmBtnText="Close"
+        confirmBtnBsStyle="danger"
+        title="Your cart is not empty!"
+        onConfirm={() => hideAlert()}
+        onCancel={() => hideAlert()}
+      >
+        Please empty your cart before changing restaurant
+      </SweetAlert>
+    );
+  };
 
   const { data: RestaurantsData, loading, error, refetch } = useQuery(
     "restaurantsCache",
@@ -46,59 +61,57 @@ export default function LandingPage({ handleShowLogin }) {
   );
 
   return (
-    <motion.div
-      variants={pageInit}
-      initial="hidden"
-      animate="visible"
-      // exit="exit"
-    >
-      <HeroSection />
-      <div className="bg-grey">
-        <Container className="py-5">
-          <Row>
-            <Col sm={12}>
-              <h2 className="heading font-weight-bold mb-4">
-                Popular Restaurant
-              </h2>
-            </Col>
-          </Row>
-          <Row className="mb-5 py-0">
-            {RestaurantsData?.data?.data?.partners?.map(
-              (restaurant, index) =>
-                index <= 3 && (
-                  <PopularCard
-                    data={restaurant}
-                    key={restaurant.id}
-                    handleShowLogin={handleShowLogin}
-                    handleShowAlert={handleShowAlert}
-                  />
-                )
-            )}
-          </Row>
-          <Row>
-            <Col sm={12}>
-              <h2 className="heading font-weight-bold mb-4">
-                Restaurant Near You
-              </h2>
-            </Col>
-          </Row>
-          <Row>
-            {RestaurantsData?.data?.data?.partners?.map((restaurant) => (
-              <RestaurantCard
-                key={restaurant.id}
-                handleShowLogin={handleShowLogin}
-                handleShowAlert={handleShowAlert}
-                data={restaurant}
-              />
-            ))}
-          </Row>
-        </Container>
-      </div>
-      <Modal show={showAlert} onHide={handleCloseAlert}>
-        <Modal.Body className="text-center text-danger">
-          Please empty your cart before changing restaurant
-        </Modal.Body>
-      </Modal>
-    </motion.div>
+    <>
+      <motion.div
+        variants={pageInit}
+        initial="hidden"
+        animate="visible"
+        // exit="exit"
+      >
+        <HeroSection />
+        <div className="bg-grey">
+          <Container className="py-5">
+            <Row>
+              <Col sm={12}>
+                <h2 className="heading font-weight-bold mb-4">
+                  Popular Restaurant
+                </h2>
+              </Col>
+            </Row>
+            <Row className="mb-5 py-0">
+              {RestaurantsData?.data?.data?.partners?.map(
+                (restaurant, index) =>
+                  index <= 3 && (
+                    <PopularCard
+                      data={restaurant}
+                      key={restaurant.id}
+                      handleShowLogin={handleShowLogin}
+                      showAlert={showAlert}
+                    />
+                  )
+              )}
+            </Row>
+            <Row>
+              <Col sm={12}>
+                <h2 className="heading font-weight-bold mb-4">
+                  Restaurant Near You
+                </h2>
+              </Col>
+            </Row>
+            <Row>
+              {RestaurantsData?.data?.data?.partners?.map((restaurant) => (
+                <RestaurantCard
+                  key={restaurant.id}
+                  handleShowLogin={handleShowLogin}
+                  data={restaurant}
+                  showAlert={showAlert}
+                />
+              ))}
+            </Row>
+          </Container>
+        </div>
+      </motion.div>
+      {alert}
+    </>
   );
 }

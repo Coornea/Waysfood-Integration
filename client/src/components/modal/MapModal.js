@@ -219,10 +219,6 @@ function MapModal({ show, handleMapClose, from }) {
   }, [userState.orderLocation]);
 
   const handleFinished = () => {
-    cartDispatch({
-      type: "EMPTY_CART",
-    });
-    history.push("/profile");
     handleMapClose();
   };
   return (

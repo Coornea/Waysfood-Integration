@@ -8,10 +8,10 @@ import { UserContext } from "../../contexts/userContext";
 // Assets
 import brandLogo from "../../assets/svg/brand.svg";
 
-function HistoryCard({ data }) {
+function HistoryCard({ data, handleMapDeliveryShow, setTempMenu }) {
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
 
-  const { userOrder, partnerOrder, status, order, createdAt } = data;
+  const { id, userOrder, partnerOrder, status, order, createdAt } = data;
   const { role } = userState.loggedUser;
 
   const [price, setPrice] = useState(0);
@@ -113,16 +113,12 @@ function HistoryCard({ data }) {
     order.map((menu) => {
       tmpPrice += menu.price * menu.qty;
     });
-    console.log(tmpPrice);
     setPrice(tmpPrice);
   };
 
   useEffect(() => {
     countPrice();
-    console.log(createdAt);
-    const jsDate = new Date(createdAt);
-    console.log("jsdate", jsDate);
-  }, []);
+  }, [data]);
 
   return (
     <Col
@@ -134,7 +130,15 @@ function HistoryCard({ data }) {
       md={12}
       className="mb-4"
     >
-      <Card style={{ border: "none" }}>
+      <Card
+        style={{ border: "none", cursor: "pointer" }}
+        onClick={() => {
+          setTempMenu({
+            id,
+          });
+          handleMapDeliveryShow();
+        }}
+      >
         <Card.Body>
           <Row>
             <Col xs={6} md={6}>
