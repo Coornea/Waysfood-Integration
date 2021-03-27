@@ -11,6 +11,7 @@ import { UserContext } from "./contexts/userContext";
 // Components
 import LoginModal from "./components/modal/LoginModal";
 import RegisterModal from "./components/modal/RegisterModal";
+import MapModal from "./components/modal/MapModal";
 import LandingPage from "./components/pages/LandingPage";
 import Header from "./components/reusable/Header";
 import DetailProductPage from "./components/pages/DetailProductPage";
@@ -32,6 +33,7 @@ if (localStorage.token) {
 function App() {
   const location = useLocation();
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
+
   // Login modal stuff
   const [showLogin, setShowLogin] = useState(false);
   const handleCloseLogin = () => setShowLogin(false);
@@ -41,6 +43,11 @@ function App() {
   const [showRegister, setShowRegister] = useState(false);
   const handleCloseRegister = () => setShowRegister(false);
   const handleShowRegister = () => setShowRegister(true);
+
+  // Order modal stuff
+  const [showDelivery, setShowDelivery] = useState(false);
+  const handleMapDeliveryClose = () => setShowDelivery(false);
+  const handleMapDeliveryShow = () => setShowDelivery(true);
 
   const checkUser = async () => {
     try {
@@ -89,7 +96,13 @@ function App() {
             <Route exact path="/detail/:id">
               <DetailProductPage />
             </Route>
-            <PrivateRoute exact path="/cart" component={CartPage} />
+            {/* <PrivateRoute
+              exact
+              path="/cart"
+              // component={
+              //   <CartPage handleMapDeliveryShow={handleMapDeliveryShow} />
+              // }
+            /> */}
             <PrivateRoute exact path="/profile" component={ProfilePage} />
             <PrivateRoute
               exact
@@ -110,6 +123,11 @@ function App() {
           handleCloseRegister={handleCloseRegister}
           handleShowLogin={handleShowLogin}
           showRegister={showRegister}
+        />
+        <MapModal
+          show={showDelivery}
+          handleMapClose={handleMapDeliveryClose}
+          from="order"
         />
       </CartContextProvider>
     </QueryClientProvider>

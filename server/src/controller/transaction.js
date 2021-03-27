@@ -64,7 +64,7 @@ exports.getTransactionsByPartner = async (req, res) => {
         },
       ],
       attributes: {
-        exclude: ["createdAt", "updatedAt", "userId", "partnerId"],
+        exclude: ["updatedAt", "userId", "partnerId"],
       },
     });
 
@@ -165,7 +165,7 @@ exports.getDetailTransaction = async (req, res) => {
         },
       ],
       attributes: {
-        exclude: ["createdAt", "updatedAt", "userId", "partnerId"],
+        exclude: ["updatedAt", "userId", "partnerId"],
       },
       where: {
         id,
@@ -276,7 +276,7 @@ exports.getUserTransaction = async (req, res) => {
         },
       ],
       attributes: {
-        exclude: ["createdAt", "updatedAt", "userId", "partnerId"],
+        exclude: ["updatedAt", "userId", "partnerId"],
       },
     });
 
@@ -417,8 +417,8 @@ exports.addTransaction = async (req, res) => {
     };
 
     res.send({
-      status: "waiting for approve",
-      message: "Success add transaction",
+      status: "success",
+      message: "Success add transaction & waiting for approval",
       data: {
         transaction,
       },

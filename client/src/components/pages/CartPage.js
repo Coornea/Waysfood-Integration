@@ -28,7 +28,7 @@ import { pageInit } from "../../utils/animVariants";
 // API
 import { API, setAuthToken } from "../../utils/api";
 
-export default function CartPage() {
+export default function CartPage({ handleMapDeliveryShow }) {
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
   const { state: cartState, dispatch: cartDispatch } = useContext(CartContext);
 
@@ -37,17 +37,10 @@ export default function CartPage() {
   const handleMapClose = () => setShow(false);
   const handleMapShow = () => setShow(true);
 
-  // Modal Handler
-  const [showDelivery, setShowDelivery] = useState(false);
-  const handleMapDeliveryClose = () => setShowDelivery(false);
-  const handleMapDeliveryShow = () => setShowDelivery(true);
-
   const [quantity, setQuantity] = useState(0);
   const [price, setPrice] = useState(0);
   const [delivery, setDelivery] = useState(10000);
   const [total, setTotal] = useState(0);
-  const [currentDate, setCurrentDate] = useState({});
-  const [listProducts, setListProducts] = useState([]);
 
   const history = useHistory();
 
@@ -58,7 +51,6 @@ export default function CartPage() {
     cartState.carts.map((cart) => {
       tmpQty = tmpQty + cart.qty;
       tmpPrice = tmpPrice + cart.price * cart.qty;
-      setListProducts((prev) => [...prev, cart.title]);
     });
 
     setQuantity(tmpQty);
@@ -66,47 +58,7 @@ export default function CartPage() {
     setTotal(tmpPrice + delivery);
   }, [cartState.carts]);
 
-  useEffect(() => {
-    const current = new Date();
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-    const days = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
-    const timeStr =
-      ("0" + current.getHours()).slice(-2) +
-      ":" +
-      ("0" + current.getMinutes()).slice(-2);
-    const currDate = `${("0" + current.getDate()).slice(-2)} ${
-      months[current.getMonth()]
-    } ${current.getFullYear()}`;
-    const currDay = days[current.getDay()];
-    setCurrentDate({
-      day: currDay,
-      date: currDate,
-    });
-  }, []);
-
   const handleOrder = async () => {
-    // console.log(cartState.carts);
     const products = {
       partnerId: cartState.currentRestaurant.id,
       products: [
@@ -118,10 +70,15 @@ export default function CartPage() {
     };
     setAuthToken(localStorage.token);
     const response = await API.post("/transaction", products);
-    console.log(response.data);
-
-    // handleMapDeliveryShow();
+    if (response?.data?.status === "success") {
+      cartDispatch({
+        type: "EMPTY_CART",
+      });
+      history.push("/profile");
+      handleMapDeliveryShow();
+    }
   };
+
   if (!userState.isLogin) {
     history.push("/");
     return null;
@@ -139,7 +96,7 @@ export default function CartPage() {
         <Row className="mb-4">
           <Col sm={12}>
             <h1 className="heading font-weight-bold">
-              {cartState.currentRestaurant.title}
+              {cartState?.currentRestaurant?.title}
             </h1>
           </Col>
         </Row>
@@ -244,11 +201,6 @@ export default function CartPage() {
         </Row>
       </Container>
       <MapModal show={show} handleMapClose={handleMapClose} from="delivery" />
-      <MapModal
-        show={showDelivery}
-        handleMapClose={handleMapDeliveryClose}
-        from="order"
-      />
     </motion.div>
   );
 }

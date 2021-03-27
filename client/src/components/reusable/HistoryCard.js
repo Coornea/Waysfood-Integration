@@ -11,10 +11,103 @@ import brandLogo from "../../assets/svg/brand.svg";
 function HistoryCard({ data }) {
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
 
-  const { userOrder, partnerOrder, status, order } = data;
+  const { userOrder, partnerOrder, status, order, createdAt } = data;
   const { role } = userState.loggedUser;
 
   const [price, setPrice] = useState(0);
+
+  const handleDate = () => {
+    const current = new Date(createdAt);
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    const timeStr =
+      ("0" + current.getHours()).slice(-2) +
+      ":" +
+      ("0" + current.getMinutes()).slice(-2);
+    const currDate = `${("0" + current.getDate()).slice(-2)} ${
+      months[current.getMonth()]
+    } ${current.getFullYear()}`;
+    const currDay = days[current.getDay()];
+    return (
+      <small className="">
+        <span className="font-weight-bold">{currDay},</span> {currDate}
+      </small>
+    );
+  };
+
+  const handleStatus = () => {
+    switch (status) {
+      case "cancel":
+        return (
+          <div
+            className="text-danger w-100 text-center"
+            style={{ backgroundColor: "#FFE8ED", borderRadius: "5px" }}
+          >
+            Cancel
+          </div>
+        );
+      case "waiting":
+        return (
+          <div
+            className="w-100 text-center"
+            style={{
+              backgroundColor: "#FFF2D3",
+              borderRadius: "5px",
+              color: "#FFB400",
+            }}
+          >
+            Waiting Approve
+          </div>
+        );
+
+      case "otw":
+        return (
+          <div
+            className="w-100 text-center"
+            style={{
+              backgroundColor: "#E7F6FF",
+              borderRadius: "5px",
+              color: "#20AFFF",
+            }}
+          >
+            On The Way
+          </div>
+        );
+      case "success":
+        return (
+          <div
+            className="text-green w-100 text-center"
+            style={{ backgroundColor: "#E7fff2", borderRadius: "5px" }}
+          >
+            Finished
+          </div>
+        );
+      default:
+        break;
+    }
+  };
+
   const countPrice = () => {
     let tmpPrice = 0;
     order.map((menu) => {
@@ -26,7 +119,11 @@ function HistoryCard({ data }) {
 
   useEffect(() => {
     countPrice();
+    console.log(createdAt);
+    const jsDate = new Date(createdAt);
+    console.log("jsdate", jsDate);
   }, []);
+
   return (
     <Col
       as={motion.div}
@@ -48,9 +145,7 @@ function HistoryCard({ data }) {
                       ? userOrder.fullName
                       : partnerOrder.fullName}
                   </p>
-                  <small className="">
-                    {/* <span className="font-weight-bold">{day},</span> {date} */}
-                  </small>
+                  {handleDate()}
                 </Col>
               </Row>
             </Col>
@@ -64,13 +159,13 @@ function HistoryCard({ data }) {
                 Total : Rp. {price.toLocaleString()}
               </p>
             </Col>
-            <Col xs={6} md={6} className=" pl-5 pl-sm-5 ">
-              <div
-                className="text-green w-100 text-center"
-                style={{ backgroundColor: "#E7fff2", borderRadius: "5px" }}
-              >
-                {status}
-              </div>
+            <Col
+              xs={6}
+              md={6}
+              className="pl-5 pl-sm-5"
+              style={{ fontSize: "0.9em" }}
+            >
+              {handleStatus()}
             </Col>
           </Row>
         </Card.Body>
