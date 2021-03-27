@@ -2,7 +2,6 @@ import { useContext, useState } from "react";
 
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
-import * as yup from "yup";
 // State Management
 import { UserContext } from "../../contexts/userContext";
 
@@ -39,17 +38,6 @@ export default function LoginModal({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const schema = yup.object().shape({
-      email: yup.string().email().min(10).max(30).required(),
-      password: yup.string().min(5).max(20).required(),
-    });
-
-    try {
-      const validate = await schema.validate(form);
-    } catch (error) {
-      return console.log(error);
-    }
 
     try {
       const config = {

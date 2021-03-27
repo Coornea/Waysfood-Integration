@@ -1,7 +1,8 @@
 import { useState, useContext } from "react";
 
 import { Modal, Button, Form } from "react-bootstrap";
-import * as yup from "yup";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 // Components
 import CustomFormInput from "../reusable/CustomFormInput";
@@ -12,73 +13,39 @@ import { UserContext } from "../../contexts/userContext";
 // API
 import { API, setAuthToken } from "../../utils/api";
 
+// Validations
+import { registerSchema } from "../../utils/validations";
+
 export default function RegisterModal({
   showRegister,
   handleCloseRegister,
   handleShowLogin,
 }) {
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
-
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-    fullName: "",
-    gender: "male",
-    phone: "",
-    role: "user",
+  const { control, register, handleSubmit, errors } = useForm({
+    resolver: yupResolver(registerSchema),
   });
-
-  const { email, password, fullName, gender, phone, role } = form;
 
   const openLogin = () => {
     handleCloseRegister();
     handleShowLogin();
   };
 
-  const onChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const schema = yup.object().shape({
-      email: yup.string().email().min(10).max(30).required(),
-      password: yup.string().min(5).max(20).required(),
-      fullName: yup.string().max(50).required(),
-      gender: yup.string().max(20).required(),
-      phone: yup.string().min(5).max(13).required(),
-      role: yup.string().max(10).required(),
-    });
-
-    try {
-      const validate = await schema.validate(form);
-    } catch (error) {
-      return console.log(error);
-    }
+  const handleRegister = async (data) => {
     try {
       const config = {
         headers: {
           "Content-Type": "application/json",
         },
       };
-      const response = await API.post("/register", form, config);
+      const response = await API.post("/register", data, config);
       console.log(response.data);
       userDispatch({
         type: "LOGIN",
         payload: response.data.data.user,
       });
       setAuthToken(response.data.data.user.token);
-      setForm({
-        email: "",
-        password: "",
-        fullName: "",
-        gender: "male",
-        phone: "",
-        role: "user",
-      });
+
       handleCloseRegister();
     } catch (error) {
       return console.log(error?.response?.data?.message);
@@ -93,83 +60,146 @@ export default function RegisterModal({
     >
       <Modal.Body className="px-4 py-5">
         <h2 className="text-warning mb-4">Register</h2>
-        <Form className="d-flex flex-column" onSubmit={handleSubmit}>
+        <Form
+          className="d-flex flex-column"
+          onSubmit={handleSubmit(handleRegister)}
+        >
           <Form.Group controlId="email">
-            <CustomFormInput
-              value={email}
-              onChange={(e) => onChange(e)}
-              type="email"
-              placeholder="Email"
+            <Controller
+              as={
+                <CustomFormInput
+                  type="email"
+                  placeholder="Email"
+                  isInvalid={!!errors.email}
+                  ref={register}
+                />
+              }
               name="email"
-              required
+              control={control}
             />
+            {errors.email && (
+              <Form.Control.Feedback type="invalid">
+                {errors.email?.message}
+              </Form.Control.Feedback>
+            )}
           </Form.Group>
           <Form.Group controlId="password">
-            <CustomFormInput
-              value={password}
-              onChange={(e) => onChange(e)}
-              type="password"
-              placeholder="Password"
+            <Controller
+              as={
+                <CustomFormInput
+                  type="password"
+                  placeholder="Password"
+                  ref={register}
+                  isInvalid={!!errors.password}
+                />
+              }
               name="password"
-              required
+              control={control}
             />
+
+            {errors.password && (
+              <Form.Control.Feedback type="invalid">
+                {errors.password?.message}
+              </Form.Control.Feedback>
+            )}
           </Form.Group>
           <Form.Group controlId="fullName">
-            <CustomFormInput
-              value={fullName}
-              onChange={(e) => onChange(e)}
-              type="text"
-              placeholder="Full Name"
+            <Controller
+              as={
+                <CustomFormInput
+                  type="text"
+                  placeholder="Full Name"
+                  ref={register}
+                  isInvalid={!!errors.fullName}
+                />
+              }
               name="fullName"
-              required
+              control={control}
             />
+            {errors.fullName && (
+              <Form.Control.Feedback type="invalid">
+                {errors.fullName?.message}
+              </Form.Control.Feedback>
+            )}
           </Form.Group>
           <Form.Group controlId="phone">
-            <CustomFormInput
-              value={phone}
-              onChange={(e) => onChange(e)}
-              type="number"
-              placeholder="Phone"
+            <Controller
+              as={
+                <CustomFormInput
+                  type="text"
+                  placeholder="Phone"
+                  ref={register}
+                  isInvalid={!!errors.phone}
+                />
+              }
               name="phone"
-              required
+              control={control}
             />
+
+            {errors.phone && (
+              <Form.Control.Feedback type="invalid">
+                {errors.phone?.message}
+              </Form.Control.Feedback>
+            )}
           </Form.Group>
           <Form.Group controlId="gender">
-            <Form.Control
-              as="select"
-              style={{
-                height: "50px",
-                boxShadow: "none",
-                backgroundColor: "rgba(210, 210, 210, 0.25)",
-                border: "3px solid #D2D2D2",
-                color: "#6c757d",
-              }}
+            <Controller
+              as={
+                <Form.Control
+                  as="select"
+                  style={{
+                    height: "50px",
+                    boxShadow: "none",
+                    backgroundColor: "rgba(210, 210, 210, 0.25)",
+                    border: "3px solid #D2D2D2",
+                    color: "#6c757d",
+                  }}
+                  ref={register}
+                  isInvalid={!!errors.gender}
+                  value="male"
+                >
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="-">-</option>
+                </Form.Control>
+              }
               name="gender"
-              value={gender}
-              onChange={(e) => onChange(e)}
-            >
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="-">-</option>
-            </Form.Control>
+              control={control}
+            />
+            {errors.gender && (
+              <Form.Control.Feedback type="invalid">
+                {errors.gender?.message}
+              </Form.Control.Feedback>
+            )}
           </Form.Group>
           <Form.Group controlId="role">
-            <Form.Control
-              as="select"
-              style={{
-                height: "50px",
-                boxShadow: "none",
-                backgroundColor: "rgba(210, 210, 210, 0.25)",
-                border: "3px solid #D2D2D2",
-                color: "#6c757d",
-              }}
+            <Controller
+              as={
+                <Form.Control
+                  as="select"
+                  style={{
+                    height: "50px",
+                    boxShadow: "none",
+                    backgroundColor: "rgba(210, 210, 210, 0.25)",
+                    border: "3px solid #D2D2D2",
+                    color: "#6c757d",
+                  }}
+                  ref={register}
+                  isInvalid={!!errors.role}
+                  value="user"
+                >
+                  <option value="user">As User</option>
+                  <option value="partner">As Partner</option>
+                </Form.Control>
+              }
+              control={control}
               name="role"
-              value={role}
-              onChange={(e) => onChange(e)}
-            >
-              <option value="user">As User</option>
-              <option value="partner">As Partner</option>
-            </Form.Control>
+            />
+            {errors.role && (
+              <Form.Control.Feedback type="invalid">
+                {errors.role?.message}
+              </Form.Control.Feedback>
+            )}
           </Form.Group>
           <Button variant="brown" type="submit" className="mb-3">
             Register
