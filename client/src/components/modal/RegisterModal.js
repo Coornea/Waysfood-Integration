@@ -76,6 +76,7 @@ export default function RegisterModal({
               }
               name="email"
               control={control}
+              defaultValue=""
             />
             {errors.email && (
               <Form.Control.Feedback type="invalid">
@@ -95,6 +96,7 @@ export default function RegisterModal({
               }
               name="password"
               control={control}
+              defaultValue=""
             />
 
             {errors.password && (
@@ -115,6 +117,7 @@ export default function RegisterModal({
               }
               name="fullName"
               control={control}
+              defaultValue=""
             />
             {errors.fullName && (
               <Form.Control.Feedback type="invalid">
@@ -134,6 +137,7 @@ export default function RegisterModal({
               }
               name="phone"
               control={control}
+              defaultValue=""
             />
 
             {errors.phone && (
@@ -156,7 +160,6 @@ export default function RegisterModal({
                   }}
                   ref={register}
                   isInvalid={!!errors.gender}
-                  value="male"
                 >
                   <option value="male">Male</option>
                   <option value="female">Female</option>
@@ -165,6 +168,7 @@ export default function RegisterModal({
               }
               name="gender"
               control={control}
+              defaultValue="male"
             />
             {errors.gender && (
               <Form.Control.Feedback type="invalid">
@@ -186,7 +190,6 @@ export default function RegisterModal({
                   }}
                   ref={register}
                   isInvalid={!!errors.role}
-                  value="user"
                 >
                   <option value="user">As User</option>
                   <option value="partner">As Partner</option>
@@ -194,6 +197,7 @@ export default function RegisterModal({
               }
               control={control}
               name="role"
+              defaultValue="user"
             />
             {errors.role && (
               <Form.Control.Feedback type="invalid">

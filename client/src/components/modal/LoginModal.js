@@ -2,6 +2,8 @@ import { useContext, useState } from "react";
 
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 // State Management
 import { UserContext } from "../../contexts/userContext";
 
@@ -11,51 +13,41 @@ import CustomFormInput from "../reusable/CustomFormInput";
 // API
 import { API, setAuthToken } from "../../utils/api";
 
+// Validation
+import { loginSchema } from "../../utils/validations";
+
 export default function LoginModal({
   showLogin,
   handleCloseLogin,
   handleShowRegister,
 }) {
   const history = useHistory();
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
-  const { email, password } = form;
+
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
+
+  const { control, register, handleSubmit, errors } = useForm({
+    resolver: yupResolver(loginSchema),
+  });
 
   const openRegister = () => {
     handleCloseLogin();
     handleShowRegister();
   };
 
-  const onChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleLogin = async (data) => {
     try {
       const config = {
         headers: {
           "Content-Type": "application/json",
         },
       };
-      const response = await API.post("/login", form, config);
-      console.log(response.data);
+      const response = await API.post("/login", data, config);
       userDispatch({
         type: "LOGIN",
         payload: response.data.data.user,
       });
       setAuthToken(response.data.data.user.token);
-      setForm({
-        email: "",
-        password: "",
-      });
+
       handleCloseLogin();
     } catch (err) {
       console.log(err.response);
@@ -70,26 +62,48 @@ export default function LoginModal({
     >
       <Modal.Body className="px-4 py-5">
         <h2 className="text-warning mb-4">Login</h2>
-        <Form className="d-flex flex-column" onSubmit={handleSubmit}>
+        <Form
+          className="d-flex flex-column"
+          onSubmit={handleSubmit(handleLogin)}
+        >
           <Form.Group controlId="email">
-            <CustomFormInput
-              value={email}
-              onChange={(e) => onChange(e)}
-              type="email"
-              placeholder="Email"
+            <Controller
+              as={
+                <CustomFormInput
+                  type="email"
+                  placeholder="Email"
+                  isInvalid={!!errors.email}
+                  ref={register}
+                />
+              }
               name="email"
-              required
+              control={control}
             />
+            {errors.email && (
+              <Form.Control.Feedback type="invalid">
+                {errors.email?.message}
+              </Form.Control.Feedback>
+            )}
           </Form.Group>
 
           <Form.Group controlId="password">
-            <CustomFormInput
-              value={password}
-              onChange={(e) => onChange(e)}
-              type="password"
-              placeholder="Password"
+            <Controller
+              as={
+                <CustomFormInput
+                  type="password"
+                  placeholder="Password"
+                  isInvalid={!!errors.password}
+                  ref={register}
+                />
+              }
               name="password"
+              control={control}
             />
+            {errors.password && (
+              <Form.Control.Feedback type="invalid">
+                {errors.password?.message}
+              </Form.Control.Feedback>
+            )}
           </Form.Group>
           <Button variant="brown" type="submit" className="mb-3">
             Login
