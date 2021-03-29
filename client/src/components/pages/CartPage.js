@@ -101,127 +101,144 @@ export default function CartPage() {
 
   return (
     <>
-      <motion.div
-        variants={pageInit}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
-        className="bg-grey py-5 mt-4"
-      >
-        <Container>
-          <Row className="mb-4">
-            <Col sm={12}>
-              <h1 className="heading font-weight-bold">
-                {cartState?.currentRestaurant?.fullName}
-              </h1>
-            </Col>
-          </Row>
-          <Row>
-            <Col sm={12}>
-              <h5 className="text-brown font-weight-normal">
-                Deliver Location
-              </h5>
-            </Col>
-          </Row>
-          <Row className="mb-4">
-            <Col sm={12} lg={9} className="mb-2">
-              <InputGroup>
-                <FormControl
-                  value={userState.orderPlace}
-                  size="lg"
-                  style={{
-                    fontSize: "0.9em",
-                    height: "50px",
-                    boxShadow: "none",
-                    backgroundColor: "white",
-                    border: "none",
-                  }}
-                />
-              </InputGroup>
-            </Col>
-            <Col sm={12} lg={3}>
-              <Button
-                variant="brown"
-                className="w-100"
-                onClick={handleMapShow}
-                style={{ height: "50px" }}
-              >
-                Select On Map
-                <img src={iconMap} alt="map icon" className="ml-2" />
-              </Button>
-            </Col>
-          </Row>
-          <Row>
-            <Col sm={12}>
-              <h5 className="text-brown font-weight-normal">
-                Review your order
-              </h5>
-            </Col>
-          </Row>
-          <Row>
-            <Col sm={12} lg={7}>
-              <hr className="divider" />
-              {cartState.carts.map((cart) => (
-                <CartOrder data={cart} key={cart.id} />
-              ))}
-            </Col>
-            <Col lg={5}>
-              <hr className="divider d-none d-lg-block" />
-              <Row>
-                <Col xs={6} lg={6}>
-                  <p>Subtotal</p>
-                </Col>
-                <Col xs={6} lg={6}>
-                  <p className="text-right text-danger">
-                    Rp. {price.toLocaleString()}
-                  </p>
-                </Col>
-              </Row>
-              <Row>
-                <Col xs={6} lg={6}>
-                  <p>Qty</p>
-                </Col>
-                <Col xs={6} lg={6}>
-                  <p className="text-right">{quantity}</p>
-                </Col>
-              </Row>
-              <Row className="pb-0">
-                <Col xs={6} lg={6}>
-                  <p className="mb-0">Ongkir</p>
-                </Col>
-                <Col xs={6} lg={6}>
-                  <p className="text-right text-danger mb-0">
-                    Rp. {delivery.toLocaleString()}
-                  </p>
-                </Col>
-              </Row>
-              <hr className="divider" />
-              <Row className="pb-0">
-                <Col xs={6} lg={6}>
-                  <p className="mb-0 text-danger font-weight-bold">Total</p>
-                </Col>
-                <Col xs={6} lg={6}>
-                  <p className="text-right text-danger font-weight-bold mb-0">
-                    Rp. {total.toLocaleString()}
-                  </p>
-                </Col>
-              </Row>
-              <Row className="mt-5 justify-content-end">
-                <Col sm={8} className="text-right mt-5">
-                  <Button
-                    variant="brown"
-                    className="w-100 "
-                    onClick={handleOrder}
-                  >
-                    Order
-                  </Button>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-        </Container>
-        <MapModal show={show} handleMapClose={handleMapClose} from="delivery" />
-      </motion.div>
+      {cartState.carts.length == 0 ? (
+        <>
+          <Container className="mt-5 py-5 d-flex flex-column justify-content-center align-items-center">
+            <h2 className="text-secondary font-weight-normal mb-4">
+              Look's like your cart is empty
+            </h2>
+            <Button variant="brown py-1" onClick={() => history.push("/")}>
+              Back to home
+            </Button>
+          </Container>
+        </>
+      ) : (
+        <motion.div
+          variants={pageInit}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          className="bg-grey py-5 mt-4"
+        >
+          <Container>
+            <Row className="mb-4">
+              <Col sm={12}>
+                <h1 className="heading font-weight-bold">
+                  {cartState?.currentRestaurant?.fullName}
+                </h1>
+              </Col>
+            </Row>
+            <Row>
+              <Col sm={12}>
+                <h5 className="text-brown font-weight-normal">
+                  Deliver Location
+                </h5>
+              </Col>
+            </Row>
+            <Row className="mb-4">
+              <Col sm={12} lg={9} className="mb-2">
+                <InputGroup>
+                  <FormControl
+                    value={userState.orderPlace}
+                    size="lg"
+                    style={{
+                      fontSize: "0.9em",
+                      height: "50px",
+                      boxShadow: "none",
+                      backgroundColor: "white",
+                      border: "none",
+                    }}
+                  />
+                </InputGroup>
+              </Col>
+              <Col sm={12} lg={3}>
+                <Button
+                  variant="brown"
+                  className="w-100"
+                  onClick={handleMapShow}
+                  style={{ height: "50px" }}
+                >
+                  Select On Map
+                  <img src={iconMap} alt="map icon" className="ml-2" />
+                </Button>
+              </Col>
+            </Row>
+            <Row>
+              <Col sm={12}>
+                <h5 className="text-brown font-weight-normal">
+                  Review your order
+                </h5>
+              </Col>
+            </Row>
+            <Row>
+              <Col sm={12} lg={7}>
+                <hr className="divider" />
+                {cartState.carts.map((cart) => (
+                  <CartOrder data={cart} key={cart.id} />
+                ))}
+              </Col>
+              <Col lg={5}>
+                <hr className="divider d-none d-lg-block" />
+                <Row>
+                  <Col xs={6} lg={6}>
+                    <p>Subtotal</p>
+                  </Col>
+                  <Col xs={6} lg={6}>
+                    <p className="text-right text-danger">
+                      Rp. {price.toLocaleString()}
+                    </p>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={6} lg={6}>
+                    <p>Qty</p>
+                  </Col>
+                  <Col xs={6} lg={6}>
+                    <p className="text-right">{quantity}</p>
+                  </Col>
+                </Row>
+                <Row className="pb-0">
+                  <Col xs={6} lg={6}>
+                    <p className="mb-0">Ongkir</p>
+                  </Col>
+                  <Col xs={6} lg={6}>
+                    <p className="text-right text-danger mb-0">
+                      Rp. {delivery.toLocaleString()}
+                    </p>
+                  </Col>
+                </Row>
+                <hr className="divider" />
+                <Row className="pb-0">
+                  <Col xs={6} lg={6}>
+                    <p className="mb-0 text-danger font-weight-bold">Total</p>
+                  </Col>
+                  <Col xs={6} lg={6}>
+                    <p className="text-right text-danger font-weight-bold mb-0">
+                      Rp. {total.toLocaleString()}
+                    </p>
+                  </Col>
+                </Row>
+                <Row className="mt-5 justify-content-end">
+                  <Col sm={8} className="text-right mt-5">
+                    <Button
+                      variant="brown"
+                      className="w-100 "
+                      onClick={handleOrder}
+                    >
+                      Order
+                    </Button>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+          </Container>
+          <MapModal
+            show={show}
+            handleMapClose={handleMapClose}
+            from="delivery"
+          />
+        </motion.div>
+      )}
       {alert}
     </>
   );
