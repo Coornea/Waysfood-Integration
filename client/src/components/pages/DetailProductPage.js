@@ -42,14 +42,7 @@ export default function DetailProductPage() {
     const response = await API.get(`/products/${id}`);
     return response;
   });
-  // const menuById = () => {
-  //   const filteredMenu = dummyRestaurant.find((menu) => menu.id == id);
-  //   setMenu(filteredMenu);
-  // };
 
-  // useEffect(() => {
-  //   menuById();
-  // }, []);
   return (
     <motion.div
       variants={pageInit}

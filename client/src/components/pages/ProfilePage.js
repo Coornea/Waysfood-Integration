@@ -4,6 +4,7 @@ import { Container, Row, Col, Card, Button, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery } from "react-query";
+import SweetAlert from "react-bootstrap-sweetalert";
 
 // State Management
 import { UserContext } from "../../contexts/userContext";
@@ -28,6 +29,26 @@ function ProfilePage() {
   const [showDelivery, setShowDelivery] = useState(false);
   const handleMapDeliveryClose = () => setShowDelivery(false);
   const handleMapDeliveryShow = () => setShowDelivery(true);
+
+  const [alert, setAlert] = useState(null);
+  const hideAlert = () => {
+    setAlert(null);
+  };
+  const showAlert = (title, message) => {
+    setAlert(
+      <SweetAlert
+        info
+        confirmBtnText="Confirm"
+        confirmBtnBsStyle="success"
+        title={title}
+        onConfirm={() => hideAlert()}
+        onCancel={() => hideAlert()}
+        focusCancelBtn
+      >
+        {message}
+      </SweetAlert>
+    );
+  };
 
   // Temporary menu data
   const [tempMenu, setTempMenu] = useState({});
@@ -127,6 +148,7 @@ function ProfilePage() {
                     data={trans}
                     handleMapDeliveryShow={handleMapDeliveryShow}
                     setTempMenu={setTempMenu}
+                    showAlert={showAlert}
                   />
                 ))}
               </Row>
@@ -140,6 +162,7 @@ function ProfilePage() {
         data={tempMenu}
         refetch={refetch}
       />
+      {alert}
     </>
   );
 }

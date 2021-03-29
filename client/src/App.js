@@ -85,7 +85,11 @@ function App() {
         <AnimatePresence exitBeforeEnter>
           <Switch location={location} key={location.key}>
             <Route exact path="/">
-              <LandingPage handleShowLogin={handleShowLogin} />
+              {userState?.loggedUser?.role === "partner" ? (
+                <IncomePage />
+              ) : (
+                <LandingPage handleShowLogin={handleShowLogin} />
+              )}
             </Route>
             <Route exact path="/detail/:id">
               <DetailProductPage />

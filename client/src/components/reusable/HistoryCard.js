@@ -1,5 +1,7 @@
 import { useState, useEffect, useContext } from "react";
+
 import { Col, Card, Row, Button } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
 import { motion } from "framer-motion";
 
 // State Management
@@ -8,7 +10,8 @@ import { UserContext } from "../../contexts/userContext";
 // Assets
 import brandLogo from "../../assets/svg/brand.svg";
 
-function HistoryCard({ data, handleMapDeliveryShow, setTempMenu }) {
+function HistoryCard({ data, handleMapDeliveryShow, setTempMenu, showAlert }) {
+  const history = useHistory();
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
 
   const { id, userOrder, partnerOrder, status, order, createdAt } = data;
@@ -116,6 +119,35 @@ function HistoryCard({ data, handleMapDeliveryShow, setTempMenu }) {
     setPrice(tmpPrice);
   };
 
+  const handleClick = () => {
+    if (userState.loggedUser.role === "partner") {
+      history.push("/");
+    } else {
+      switch (status) {
+        case "waiting":
+          showAlert("Waiting", "Waiting for your order approval");
+          break;
+
+        case "success":
+          showAlert("Finished", "Your order is finished");
+
+          break;
+        case "cancel":
+          showAlert("Cancel", "Your order has been cancelled", true);
+
+          break;
+        case "otw":
+          setTempMenu({
+            id,
+          });
+          handleMapDeliveryShow();
+          break;
+        default:
+          break;
+      }
+    }
+  };
+
   useEffect(() => {
     countPrice();
   }, [data]);
@@ -130,15 +162,7 @@ function HistoryCard({ data, handleMapDeliveryShow, setTempMenu }) {
       md={12}
       className="mb-4"
     >
-      <Card
-        style={{ border: "none", cursor: "pointer" }}
-        onClick={() => {
-          setTempMenu({
-            id,
-          });
-          handleMapDeliveryShow();
-        }}
-      >
+      <Card style={{ border: "none", cursor: "pointer" }} onClick={handleClick}>
         <Card.Body>
           <Row>
             <Col xs={6} md={6}>

@@ -270,6 +270,24 @@ exports.updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
 
+    const { title, price } = req.body;
+
+    const schema = Joi.object({
+      title: Joi.string().required(),
+      price: Joi.number().required(),
+    });
+
+    const { error } = schema.validate({
+      title,
+      price,
+    });
+
+    if (error)
+      return res.status(400).send({
+        status: "validation failed",
+        message: error.details[0].message,
+      });
+
     const editProduct = await Product.update(
       { ...req.body, image: req.files.image && req.files.image[0].filename },
       {

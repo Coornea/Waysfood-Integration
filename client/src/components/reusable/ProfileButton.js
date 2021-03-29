@@ -3,6 +3,7 @@ import { useContext, useState, useEffect } from "react";
 import { Dropdown } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 import { motion } from "framer-motion";
+import SweetAlert from "react-bootstrap-sweetalert";
 
 // State Management
 import { UserContext } from "../../contexts/userContext";
@@ -22,6 +23,31 @@ const ProfileButton = () => {
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
   const { state: cartState, dispatch: cartDispatch } = useContext(CartContext);
 
+  const [alert, setAlert] = useState(null);
+  const hideAlert = () => {
+    setAlert(null);
+  };
+  const showAlert = () => {
+    setAlert(
+      <SweetAlert
+        info
+        confirmBtnText="Close"
+        confirmBtnBsStyle="info"
+        title="Your cart is empty!"
+        onConfirm={() => {
+          history.push("/");
+          hideAlert();
+        }}
+        onCancel={() => {
+          history.push("/");
+          hideAlert();
+        }}
+      >
+        Please order to see your cart
+      </SweetAlert>
+    );
+  };
+
   const handleLogout = () => {
     cartDispatch({
       type: "EMPTY_CART",
@@ -34,7 +60,15 @@ const ProfileButton = () => {
 
   return (
     <>
-      <Link to={userState.loggedUser.role === "partner" ? "/income" : "/cart"}>
+      <Link
+        onL
+        to={userState.loggedUser.role === "partner" ? "/income" : "/cart"}
+        onClick={() => {
+          userState.loggedUser.role !== "partner" &&
+            cartState.carts.length == 0 &&
+            showAlert();
+        }}
+      >
         <motion.div
           whileHover={{
             rotate: [0, 20, -20, 20, -20, 0],
@@ -123,6 +157,7 @@ const ProfileButton = () => {
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
+      {alert}
     </>
   );
 };
