@@ -1,0 +1,27 @@
+
+.contentOther {
+    width: 100%;
+}
+
+.recommendContainer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.recommend {
+    background-color: white;
+    height: 230px;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    margin-bottom: 40px;
+}
+
+.recommendPreview {
+    margin: 10px;
+}
+
+.recommendText {
+    margin: 10px;
+}

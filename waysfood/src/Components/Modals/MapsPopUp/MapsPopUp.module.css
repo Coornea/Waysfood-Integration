@@ -1,0 +1,12 @@
+.content {
+  width: 100%;
+  height: auto;
+  border-radius: 3px;
+  padding: 40px 30px 0 30px;
+}
+
+.detailedInfo {
+  background-color: blue;
+  position: relative;
+  z-index: 1;
+}

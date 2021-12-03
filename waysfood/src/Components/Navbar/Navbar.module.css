@@ -1,0 +1,95 @@
+.navbar {
+   display: flex;
+   flex-direction: row;
+   background-color: #ffc700;
+   height: 90px;
+   overflow: hidden;
+   /* position: fixed; */
+   top: 0;
+   width: 100%;
+}
+
+.wrap {
+   right: 3rem;
+   position: absolute;
+}
+
+.logo {
+   margin-top: 26px;
+   margin-left: 55px;
+   width: auto;
+   height: 40px;
+   position: absolute;
+}
+
+.btnLogin {
+   margin-top: 26px;
+   margin-left: 15px;
+   background-color: #433434;
+   color: white;
+   border: none;
+   border-radius: 3px;
+   font-size: 16px;
+   height: 30px;
+   width: 100px;
+   text-align: center;
+}
+
+.btnRegister {
+   margin-top: 26px;
+   margin-left: 15px;
+   background-color: #433434;
+   color: white;
+   border: none;
+   border-radius: 3px;
+   font-size: 16px;
+   height: 30px;
+   width: 100px;
+   text-align: center;
+}
+
+.navIcon {
+   display: inline-block;
+}
+
+.cartIcon {
+   width: auto;
+   height: 35px;
+   margin-top: 10px;
+   margin-right: 20px;
+}
+
+.cartIcon:hover {
+   cursor: pointer;
+}
+
+.avatar {
+   width: 100%;
+}
+
+.avatarContainer {
+   display: flex;
+   margin-top: 15px;
+}
+
+.avatarContainer:hover {
+   cursor: pointer;
+}
+
+.avatarWrap {
+   overflow: hidden;
+   margin-right: 4px;
+   width: 60px;
+   height: 60px;
+   border-radius: 50%;
+   background-color: red;
+   position: relative;
+}
+
+.polygon {
+   width: 12px;
+   margin-left: 100%;
+   margin-top: 20%;
+   rotate: 180deg;
+   position: absolute;
+}

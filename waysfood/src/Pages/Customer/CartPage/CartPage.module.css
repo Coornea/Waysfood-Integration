@@ -1,0 +1,96 @@
+.container {
+   width: 100%;
+   height: 100%;
+   background-color: #e5e5e5;
+   margin-bottom: -20px;
+   margin-top: 15vh;
+}
+
+.formContainer {
+   /* background-color: yellow; */
+   margin: 0 120px 20px 120px;
+   padding-top: 60px;
+}
+
+.restaurantName {
+   margin-left: 60px;
+}
+
+.label {
+   font-size: 16px;
+   margin: 10px 0 20px 60px;
+}
+
+.imgProduct {
+   width: auto;
+   height: 80px;
+}
+
+.productInfo {
+   display: flex;
+   flex-direction: initial;
+   justify-content: space-between;
+   width: 80%;
+   background-color: #e5e5e5;
+   margin-left: -270px;
+}
+
+.moreInfo {
+   /* display: flex; */
+   /* flex-direction: ; */
+   /* justify-content: space-between; */
+}
+
+.bin {
+   width: auto;
+   height: 20px;
+}
+
+.deliveryLocation {
+   /* background-color: aqua; */
+   display: flex;
+   justify-content: space-between;
+   padding: 0px 60px 0 60px;
+}
+
+.inputLocation {
+   width: 72%;
+   height: 45px;
+   border: none;
+   border-radius: 5px;
+   background-color: white;
+   padding-left: 20px;
+}
+
+.btnSelectMap {
+   width: 25%;
+   height: 45px;
+   border-radius: 5px;
+   border: none;
+   background-color: #433434;
+   color: white;
+}
+
+.reviewOrder {
+   /* background-color: red; */
+   display: flex;
+   justify-content: space-between;
+   /* padding: 0px 60px 0 60px; */
+}
+
+.moreInfo {
+}
+
+.bill {
+   width: 38%;
+}
+
+.btnOrder {
+   width: 60%;
+   height: 45px;
+   border-radius: 5px;
+   border: none;
+   background-color: #433434;
+   color: white;
+   margin: 20px 0 40px 0;
+}
