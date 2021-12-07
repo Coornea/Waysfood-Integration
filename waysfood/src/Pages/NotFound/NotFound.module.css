@@ -1,0 +1,19 @@
+.container {
+  background-color: beige;
+}
+
+.content {
+  padding: 40px 38vw 25px;
+}
+
+.imgNotFound {
+  width: auto;
+  height: 400px;
+}
+
+.freepik {
+  font-size: 10px;
+  text-decoration: none;
+  color: #ffc700;
+  padding: 20px 30px;
+}

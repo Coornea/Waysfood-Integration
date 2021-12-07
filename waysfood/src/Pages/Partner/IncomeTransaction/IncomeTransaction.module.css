@@ -1,0 +1,57 @@
+.container {
+  background-color: #efefef;
+  padding: 20px 20vw;
+  height: 85vh;
+}
+
+.content {
+  padding: 20px 2vw;
+}
+
+.tableContainer {
+  width: 800px;
+}
+
+table,
+tr,
+th,
+td {
+  border: 2px solid #828282;
+  padding: 5px;
+  height: 40px;
+}
+
+th {
+  background-color: #e5e5e5;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 18px;
+  text-align: center;
+}
+
+td {
+  background-color: white;
+}
+
+.btnContainer {
+  display: flex;
+  justify-content: space-around;
+  border: none;
+  padding: 6px 10px;
+}
+
+.btnCancel {
+  border: none;
+  color: white;
+  background-color: #ff0742;
+  border-radius: 5px;
+  width: 47%;
+}
+
+.btnApprove {
+  border: none;
+  color: white;
+  background-color: #0acf83;
+  border-radius: 5px;
+  width: 47%;
+}

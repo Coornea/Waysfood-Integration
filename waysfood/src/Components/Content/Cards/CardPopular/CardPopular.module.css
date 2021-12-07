@@ -1,0 +1,31 @@
+.contentPopular {
+    width: 100%;
+    padding: 50px 150px auto 150px !important;
+}
+
+.merchantContainer {
+    display: flex;
+    justify-content: space-between;
+}
+
+.merchant {
+    background-color: white;
+    height: 95px;
+    width: 250px;
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.merchantLogo {
+    margin-left: 16px;
+    height: 65px;
+    width: auto;
+}
+
+.merchantLabel {
+    margin-left: 19px;
+    font-size: 18px;
+    font-weight: bold;
+    
+}
