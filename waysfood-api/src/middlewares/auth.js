@@ -1,4 +1,3 @@
-// Import Package
 const jwt = require("jsonwebtoken");
 
 exports.auth = async (req, res, next) => {

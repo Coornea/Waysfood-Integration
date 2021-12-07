@@ -1,6 +1,7 @@
 // Import dotenv
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 
 // Get routes to variable router
 const router = require("./src/routes");
