@@ -1,24 +1,7 @@
 const { user, product, transaction } = require("../../models");
+const bcrypt = require("bcrypt");
 
-exports.addUser = async (req, res) => {
-   try {
-      const data = req.body;
-
-      const response = await user.create(data);
-
-      res.send({
-         status: "Success!",
-         message: "Add User Finished!",
-         data: response,
-      });
-   } catch (error) {
-      console.log(error);
-      res.send({
-         status: "Failed!",
-         message: "Server Error!",
-      });
-   }
-};
+// Add User has been deleted, cause we need to use register
 
 exports.getUsers = async (req, res) => {
    try {
@@ -28,10 +11,18 @@ exports.getUsers = async (req, res) => {
          },
       });
 
-      res.send({
+      const usersConvert = JSON.parse(JSON.stringify(users));
+      const userData = usersConvert.map((user) => {
+         return {
+            ...user,
+            image: process.env.PATH_FILE + user.image,
+         };
+      });
+
+      res.status(200).send({
          status: "Success!",
          data: {
-            users,
+            userData,
          },
       });
    } catch (error) {
@@ -47,7 +38,7 @@ exports.getUser = async (req, res) => {
    try {
       const { id } = req.params;
 
-      const userData = await user.findOne({
+      const users = await user.findOne({
          where: {
             id,
          },
@@ -56,7 +47,13 @@ exports.getUser = async (req, res) => {
          },
       });
 
-      res.send({
+      const usersConvert = JSON.parse(JSON.stringify(users));
+      const userData = {
+         ...usersConvert,
+         image: process.env.PATH_FILE + usersConvert.image,
+      };
+
+      res.status(200).send({
          status: "Success!",
          data: {
             user: userData,
@@ -64,7 +61,7 @@ exports.getUser = async (req, res) => {
       });
    } catch (error) {
       console.log(error);
-      res.send({
+      res.status(500).send({
          status: "Failed!",
          message: "Server Error!",
       });
@@ -75,27 +72,58 @@ exports.updateUser = async (req, res) => {
    try {
       const { id } = req.params;
 
-      const data = req.body;
+      if (req.user.id != id) {
+         return res.status(401).send({
+            status: "Failed!",
+            message: "You don't have permission!",
+         });
+      }
 
-      const userData = await user.update(data, {
-         where: {
-            id,
+      const hashedPassword = await bcrypt.hash(req.body.password, salt[10]);
+
+      await user.update(
+         {
+            ...req.body,
+            password: hashedPassword,
+            image: req.files.image && req.files.image[0].filename,
          },
-         // attributes: {
-         //   exclude: ["password", "createdAt", "updatedAt"],
-         // },
+         {
+            where: {
+               id,
+            },
+         }
+      );
+
+      const rawUser = await user.findOne({
+         where: { id },
+         attributes: {
+            exclude: ["password", "createdAt", "updatedAt"],
+         },
       });
 
-      res.send({
+      if (rawUser == null) {
+         return res.status(404).send({
+            status: "Failed!",
+            message: "User doesn't available!",
+         });
+      }
+
+      const rawUserConvert = JSON.parse(JSON.stringify(rawUser));
+      const userData = {
+         ...rawUserConvert,
+         image: process.env.PATH_FILE + rawUserConvert.image,
+      };
+
+      res.status(200).send({
          status: "Success!",
          message: `Update User with id ${id}, Finished!`,
-         data: req.body,
+         data: userData,
       });
    } catch (error) {
       console.log(error);
-      res.send({
+      res.status(500).send({
          status: "Failed!",
-         message: "Server Error!",
+         message: "Internal Server Error!",
       });
    }
 };
@@ -123,7 +151,7 @@ exports.deleteUser = async (req, res) => {
          },
       });
 
-      res.send({
+      res.status(200).send({
          status: "Success!",
          message: `Delete User with id ${id}, Finished!`,
          data: {
@@ -132,9 +160,9 @@ exports.deleteUser = async (req, res) => {
       });
    } catch (error) {
       console.log(error);
-      res.send({
+      res.status(500).send({
          status: "Failed!",
-         message: "Server Error!",
+         message: "Internal Server Error!",
       });
    }
 };

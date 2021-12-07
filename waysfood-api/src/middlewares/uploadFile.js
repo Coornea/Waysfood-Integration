@@ -1,8 +1,6 @@
-// Import Package
 const multer = require("multer");
 
 exports.uploadFiles = (imageFile) => {
-   // Init Multer Diskstorage
    const storage = multer.diskStorage({
       destination: (req, file, cb) => {
          cb(null, "uploads");
@@ -12,7 +10,6 @@ exports.uploadFiles = (imageFile) => {
       },
    });
 
-   // Add Filter For Uploads
    const fileFilter = (req, file, cb) => {
       if (file.filename === imageFile) {
          if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF)$/)) {

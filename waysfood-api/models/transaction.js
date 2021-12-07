@@ -18,21 +18,21 @@ module.exports = (sequelize, DataTypes) => {
          transaction.belongsTo(models.user, {
             as: "buyer",
             foreignKey: {
-               name: "idBuyer",
+               name: "idCustomer",
             },
          });
          transaction.belongsTo(models.user, {
             as: "seller",
             foreignKey: {
-               name: "idSeller",
+               name: "idPartner",
             },
          });
       }
    }
    transaction.init(
       {
-         idBuyer: DataTypes.INTEGER,
-         idSeller: DataTypes.INTEGER,
+         idCustomer: DataTypes.INTEGER,
+         idPartner: DataTypes.INTEGER,
          status: DataTypes.STRING,
       },
       {

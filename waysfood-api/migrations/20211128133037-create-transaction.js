@@ -8,7 +8,7 @@ module.exports = {
             primaryKey: true,
             type: Sequelize.INTEGER,
          },
-         idBuyer: {
+         idCustomer: {
             allowNull: false,
             type: Sequelize.INTEGER,
             references: {
@@ -18,7 +18,7 @@ module.exports = {
             onUpdate: "CASCADE",
             onDelete: "CASCADE",
          },
-         idSeller: {
+         idPartner: {
             type: Sequelize.INTEGER,
             references: {
                model: "users",

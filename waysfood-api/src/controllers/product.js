@@ -2,7 +2,6 @@ const { product, user } = require("../../models");
 
 const joi = require("joi");
 
-// Not Finished
 exports.addProduct = async (req, res) => {
    const schema = joi.object({
       title: joi.string().min(3).required(),
@@ -11,6 +10,12 @@ exports.addProduct = async (req, res) => {
    });
 
    const { error } = schema.validate(req.body);
+   if (!req.files.image) {
+      return res.status(400).send({
+         status: "Failed!",
+         message: "Please insert an image to upload!",
+      });
+   }
 
    if (error) {
       console.log(error);
@@ -26,7 +31,7 @@ exports.addProduct = async (req, res) => {
          idUser: req.user.id,
          // qty: req.user.qty,
       });
-      const userData = await product.findOne({
+      const rawProduct = await product.findOne({
          include: {
             model: user,
             as: "user",
@@ -41,10 +46,15 @@ exports.addProduct = async (req, res) => {
             id: newProduct.id,
          },
       });
-      res.send({
+      const rawProductConvert = JSON.parse(JSON.stringify(rawProduct));
+      const productData = {
+         ...rawProductConvert,
+         image: process.env.PATH_FILE + rawProductConvert.image,
+      };
+      res.status(200).send({
          status: "Success!",
          message: "Add Product Finished!",
-         userData,
+         productData,
       });
    } catch (error) {
       console.log(error);
@@ -69,19 +79,17 @@ exports.getProducts = async (req, res) => {
             exclude: ["idUser", "createdAt", "updatedAt"],
          },
       });
-      products = JSON.parse(JSON.stringify(products));
-      products = products.map((item) => {
+      productsConvert = JSON.parse(JSON.stringify(products));
+      productData = productsConvert.map((item) => {
          return {
             ...item,
             image: process.env.PATH_FILE + item.image,
          };
       });
 
-      res.send({
+      res.status(200).send({
          status: "Success!",
-         data: {
-            products,
-         },
+         data: productData,
       });
    } catch (error) {
       console.log(error);
@@ -92,30 +100,44 @@ exports.getProducts = async (req, res) => {
    }
 };
 
-exports.getProduct = async (req, res) => {
+exports.getProductsByPartner = async (req, res) => {
    try {
       const { id } = req.params;
 
-      const productData = await product.findOne({
-         where: {
-            id,
+      const products = await product.findAll({
+         include: {
+            model: user,
+            as: "user",
+            attributes: [],
+            where: {
+               id,
+               role: "Partner",
+            },
          },
          attributes: {
             exclude: ["idUser", "createdAt", "updatedAt"],
          },
       });
 
+      const productsConvert = JSON.parse(JSON.stringify(products));
+      const productsData = productsConvert.map((product) => {
+         return {
+            ...product,
+            image: process.env.PATH_FILE + product.image,
+         };
+      });
+
       res.send({
          status: "Success!",
          data: {
-            products: productData,
+            products: productsData,
          },
       });
    } catch (error) {
       console.log(error);
-      res.send({
+      res.status(500).send({
          status: "Failed!",
-         message: "Server Error!",
+         message: "Internal Server Error!",
       });
    }
 };
@@ -138,6 +160,12 @@ exports.getDetailProduct = async (req, res) => {
             exclude: ["createdAt", "updatedAt"],
          },
       });
+      if (productDetail == null) {
+         return res.status(404).send({
+            status: "Failed!",
+            message: "Product doesn't availabe!",
+         });
+      }
       res.send({
          status: "Success!",
          data: {
@@ -145,7 +173,7 @@ exports.getDetailProduct = async (req, res) => {
             title: productDetail.title,
             price: productDetail.price,
             image: process.env.PATH_FILE + productDetail.image,
-            qty: 35,
+            qty: productDetail.qty,
             user: productDetail.user,
          },
       });
@@ -153,12 +181,33 @@ exports.getDetailProduct = async (req, res) => {
       console.log(error);
       res.status(500).send({
          status: "Failed!",
-         message: "Server Error!",
+         message: "Internal Server Error!",
       });
    }
 };
 
 exports.updateProduct = async (req, res) => {
+   const schema = joi.object({
+      title: joi.string().min(3).required(),
+      price: joi.number().required(),
+      qty: joi.number().required(),
+   });
+
+   const { error } = schema.validate(req.body);
+   if (!req.files.image) {
+      return res.status(400).send({
+         status: "Failed!",
+         message: "Please insert an image to upload!",
+      });
+   }
+
+   if (error) {
+      console.log(error);
+      return res.status(400).send({
+         error: error.details[0].message,
+      });
+   }
+
    try {
       const { id } = req.params;
       const newData = req.body;
@@ -182,11 +231,16 @@ exports.updateProduct = async (req, res) => {
             exclude: ["idUser", "createdAt", "updatedAt"],
          },
       });
+      const productDetailConvert = JSON.parse(JSON.stringify(productDetail));
+      const productData = {
+         ...productDetailConvert,
+         image: process.env.PATH_FILE + productDetailConvert.image,
+      };
 
       res.send({
          status: "Success!",
          message: `Update Product with id ${id}, Finished!`,
-         productDetail,
+         productData,
       });
    } catch (error) {
       console.log(error);
@@ -213,6 +267,12 @@ exports.deleteProduct = async (req, res) => {
             message: `Product with id ${id}, not found!`,
          });
       }
+      if (productData.idUser !== req.user.id) {
+         return re.status(401).send({
+            status: "Failed!",
+            message: "You don't have permission!",
+         });
+      }
 
       await product.destroy({
          where: {
@@ -229,9 +289,9 @@ exports.deleteProduct = async (req, res) => {
       });
    } catch (error) {
       console.log(error);
-      res.send({
+      res.status(500).send({
          status: "Failed!",
-         message: "Server Error!",
+         message: "Internal Server Error!",
       });
    }
 };
