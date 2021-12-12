@@ -53,16 +53,18 @@ function ProfilePage() {
   // Temporary menu data
   const [tempMenu, setTempMenu] = useState({});
 
-  const { data: transactionsData, loading, error, refetch } = useQuery(
-    "transactionsCache",
-    async () => {
-      setAuthToken(localStorage.token);
-      const response = await API.get(
-        role === "partner" ? `/transactions/${id}` : `/my-transactions/${id}`
-      );
-      return response.data;
-    }
-  );
+  const {
+    data: transactionsData,
+    loading,
+    error,
+    refetch,
+  } = useQuery("transactionsCache", async () => {
+    setAuthToken(localStorage.token);
+    const response = await API.get(
+      role === "partner" ? `/transactions/${id}` : `/my-transactions/${id}`
+    );
+    return response.data;
+  });
 
   return (
     <>
@@ -73,7 +75,7 @@ function ProfilePage() {
         exit="exit"
         className="bg-grey py-5 mt-4"
       >
-        <Container>
+        <Container className="mt-5">
           <Row className="mb-4">
             <Col xs={12} md={12} lg={7}>
               <Row className="mb-4">
@@ -85,7 +87,7 @@ function ProfilePage() {
                 <Col sm={12} md={4}>
                   <img
                     src={image}
-                    alt="profile photo"
+                    alt="photoProfile"
                     className="w-100 mb-4 mb-sm-0"
                     height="222"
                     style={{ borderRadius: "5px", objectFit: "scale-down" }}

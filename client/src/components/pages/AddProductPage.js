@@ -27,6 +27,7 @@ import { pageInit } from "../../utils/animVariants";
 
 // API
 import { API } from "../../utils/api";
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
 function AddProductPage() {
   const history = useHistory();
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
@@ -57,7 +58,7 @@ function AddProductPage() {
         confirmBtnText="Confirm"
         confirmBtnBsStyle="success"
         title="Success!"
-        onConfirm={() => hideAlert()}
+        onConfirm={() => history.push("/add")}
         onCancel={() => hideAlert()}
         focusCancelBtn
       >
@@ -79,7 +80,7 @@ function AddProductPage() {
       },
     };
     const response =
-      editId == 0
+      editId === 0
         ? await API.post("/product", body, config)
         : await API.patch(`/product/${editId}`, body, config);
 
@@ -97,13 +98,15 @@ function AddProductPage() {
     addProduct.mutate();
   };
 
-  const { data: MenuData, loading, error, refetch } = useQuery(
-    "menuData",
-    async () => {
-      const response = await API.get(`/products/${id}`);
-      return response;
-    }
-  );
+  const {
+    data: MenuData,
+    loading,
+    error,
+    refetch,
+  } = useQuery("menuData", async () => {
+    const response = await API.get(`/products/${id}`);
+    return response;
+  });
 
   const loadEachMenu = async () => {
     try {
@@ -139,11 +142,11 @@ function AddProductPage() {
         exit="exit"
         className="bg-grey py-5 mt-4"
       >
-        <Container>
+        <Container className="mt-5">
           <Row className="mb-4">
             <Col xs={12}>
-              <h1 className="heading font-weight-bold">
-                {editId == 0 ? "Add" : "Edit"} Product
+              <h1 id="title1" className="heading font-weight-bold">
+                {editId === 0 ? "Add" : "Edit"} Product
               </h1>
               {addProduct.error?.response?.data && (
                 <Alert variant="danger">
@@ -196,9 +199,28 @@ function AddProductPage() {
 
                 <Row className="mt-2">
                   <Col xs={12} lg={12} className="text-right">
-                    <Button variant="brown" className="w-25" type="submit">
-                      Save
-                    </Button>
+                    {editId === 0 ? (
+                      <>
+                        <Button variant="brown" className="w-25" type="submit">
+                          Save
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Link to="/add">
+                          <Button variant="danger" className="w-25">
+                            Cancel
+                          </Button>
+                        </Link>
+                        <Button
+                          variant="brown"
+                          className="w-25 ml-2"
+                          type="submit"
+                        >
+                          Save
+                        </Button>
+                      </>
+                    )}
                   </Col>
                 </Row>
               </Form>

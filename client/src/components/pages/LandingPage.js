@@ -21,9 +21,6 @@ import HeroSection from "./HeroSection";
 import PopularCard from "../reusable/PopularCard";
 import RestaurantCard from "../reusable/RestaurantCard";
 
-// Dummy data
-import { dummyRestaurant } from "../../utils/data";
-
 // Animations
 import { pageInit } from "../../utils/animVariants";
 
@@ -52,13 +49,15 @@ export default function LandingPage({ handleShowLogin }) {
     );
   };
 
-  const { data: RestaurantsData, loading, error, refetch } = useQuery(
-    "restaurantsCache",
-    async () => {
-      const response = await API.get("/partners");
-      return response;
-    }
-  );
+  const {
+    data: RestaurantsData,
+    loading,
+    error,
+    refetch,
+  } = useQuery("restaurantsCache", async () => {
+    const response = await API.get("/partners");
+    return response;
+  });
 
   return (
     <>
@@ -70,7 +69,7 @@ export default function LandingPage({ handleShowLogin }) {
       >
         <HeroSection />
         <div className="bg-grey">
-          <Container className="py-5">
+          <Container className="py-5 mt-5">
             <Row>
               <Col sm={12}>
                 <h2 className="heading font-weight-bold mb-4">

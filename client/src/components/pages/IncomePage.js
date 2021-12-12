@@ -37,14 +37,16 @@ function IncomePage() {
 
   const { id } = userState.loggedUser;
 
-  const { data: IncomeData, loading, error, refetch } = useQuery(
-    "incomeCache",
-    async () => {
-      setAuthToken(localStorage.token);
-      const response = await API.get(`/transactions/${id}`);
-      return response.data;
-    }
-  );
+  const {
+    data: IncomeData,
+    loading,
+    error,
+    refetch,
+  } = useQuery("incomeCache", async () => {
+    setAuthToken(localStorage.token);
+    const response = await API.get(`/transactions/${id}`);
+    return response.data;
+  });
 
   useEffect(() => {
     userState.loggedUser.role !== "partner" && history.push("/");
@@ -154,7 +156,7 @@ function IncomePage() {
       exit="exit"
       className="bg-grey py-5 mt-4"
     >
-      <Container>
+      <Container className="mt-5">
         <Row className="mb-4">
           <Col xs={12}>
             <h1 className="heading font-weight-bold">Income Transaction</h1>
@@ -184,6 +186,7 @@ function IncomePage() {
                       <td>{index + 1}</td>
                       <td>{income.userOrder.fullName}</td>
                       <td>{income.userOrder.location}</td>
+                      {console.log(income)}
                       <td>
                         <div
                           style={{
@@ -193,10 +196,9 @@ function IncomePage() {
                             textOverflow: "ellipsis",
                           }}
                         >
-                          {/* {`${income.listProducts}, `} */}
+                          {income.order[0].title + ","}
                         </div>
                       </td>
-
                       {handleAction(income.id, income.status)}
                     </tr>
                   ))}

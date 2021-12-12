@@ -1,8 +1,19 @@
+import React, { useState } from "react";
 import { Form } from "react-bootstrap";
+import ReactCrop from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
 
 import iconClip from "../../assets/svg/clip.svg";
 
 const CustomFormFile = ({ placeholder, name, onChange, ...rest }) => {
+  const [state, setState] = useState({
+    src: null,
+    crop: {
+      unit: "%",
+      width: 50,
+      aspect: 3 / 4,
+    },
+  });
   return (
     <>
       <Form.Label

@@ -51,8 +51,8 @@ export default function DetailProductPage() {
       exit="exit"
     >
       <HeroDetail data={RestaurantData?.data?.data?.user} />
-      <div className="bg-grey py-5 mt-4">
-        <Container>
+      <div className="bg-red py-5 mt-4">
+        <Container className="mt-5">
           <Row>
             <Col xs={12}>
               <h1 className="heading font-weight-bold mb-4">

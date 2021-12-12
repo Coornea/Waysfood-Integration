@@ -22,6 +22,7 @@ import MapModal from "../modal/MapModal";
 
 // Assets
 import iconMap from "../../assets/svg/map.svg";
+import empty from "../../assets/svg/empty.svg";
 
 // Animations
 import { pageInit } from "../../utils/animVariants";
@@ -104,6 +105,15 @@ export default function CartPage() {
       {cartState.carts.length == 0 ? (
         <>
           <Container className="mt-5 py-5 d-flex flex-column justify-content-center align-items-center">
+            <img
+              src={empty}
+              alt="Empty"
+              style={{
+                width: "40vw",
+                marginBottom: "-270px",
+                marginTop: "-50px",
+              }}
+            />
             <h2 className="text-secondary font-weight-normal mb-4">
               Look's like your cart is empty
             </h2>
@@ -120,7 +130,7 @@ export default function CartPage() {
           exit="exit"
           className="bg-grey py-5 mt-4"
         >
-          <Container>
+          <Container className="mt-5">
             <Row className="mb-4">
               <Col sm={12}>
                 <h1 className="heading font-weight-bold">

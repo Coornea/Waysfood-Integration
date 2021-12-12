@@ -33,6 +33,7 @@ function EditProfilePage() {
   });
   const { id } = userState.loggedUser;
   const { fullName, email, password, image } = form;
+  const [preview, setPreview] = useState("");
 
   // Load user data
   const loadUserData = async () => {
@@ -106,7 +107,7 @@ function EditProfilePage() {
       exit="exit"
       className="bg-grey py-5 mt-4"
     >
-      <Container>
+      <Container className="mt-5">
         <Row className="mb-4">
           <Col xs={12}>
             <h1 className="heading font-weight-bold">

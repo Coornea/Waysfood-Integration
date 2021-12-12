@@ -10,7 +10,8 @@ import { UserContext } from "../../contexts/userContext";
 
 // Global variable
 mapboxgl.workerClass = MapboxWorker;
-mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
+mapboxgl.accessToken =
+  "pk.eyJ1Ijoia2FydW5pYW55YSIsImEiOiJja3czNGxvZjUwaGp4Mm5tcDN6emtpZWZoIn0.ozGrXjMS27tMGkG2scSosw";
 
 export default function MapRender({ isMarker }) {
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
@@ -23,7 +24,7 @@ export default function MapRender({ isMarker }) {
   useEffect(() => {
     const map = new mapboxgl.Map({
       container: mapContainer.current,
-      style: "mapbox://styles/mapbox/streets-v11",
+      style: "mapbox://styles/karunianya/ckwp0yike2lnc14s95ku31tgq",
       center: [lng, lat],
       zoom: zoom,
     });

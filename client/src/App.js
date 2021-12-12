@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 
-import { Switch, Route, useLocation } from "react-router-dom";
+import { Switch, Route, useLocation, useHistory } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { QueryClient, QueryClientProvider } from "react-query";
 
@@ -23,6 +23,7 @@ import PrivateRoute from "./components/routes/PrivateRoute";
 
 // API
 import { API, setAuthToken } from "./utils/api";
+import NotFound from "./components/pages/NotFound/NotFound";
 
 //init token pada axios
 if (localStorage.token) {
@@ -30,6 +31,7 @@ if (localStorage.token) {
 }
 
 function App() {
+  const history = useHistory();
   const location = useLocation();
   const { state: userState, dispatch: userDispatch } = useContext(UserContext);
 
@@ -43,7 +45,7 @@ function App() {
   const handleCloseRegister = () => setShowRegister(false);
   const handleShowRegister = () => setShowRegister(true);
 
-  const checkUser = async () => {
+  const checkCustomer = async () => {
     try {
       const response = await API.get("/check-auth");
 
@@ -69,7 +71,7 @@ function App() {
   };
 
   useEffect(() => {
-    checkUser();
+    checkCustomer();
   }, []);
 
   const client = new QueryClient();
@@ -81,7 +83,6 @@ function App() {
           handleShowLogin={handleShowLogin}
           handleShowRegister={handleShowRegister}
         />
-
         <AnimatePresence exitBeforeEnter>
           <Switch location={location} key={location.key}>
             <Route exact path="/">
@@ -103,6 +104,8 @@ function App() {
             />
             <PrivateRoute exact path="/add" component={AddProductPage} />
             <PrivateRoute exact path="/income" component={IncomePage} />
+            <Route exact path="/error" component={NotFound} />
+            <Route path="*" component={() => history.push("/error")} />
           </Switch>
         </AnimatePresence>
 

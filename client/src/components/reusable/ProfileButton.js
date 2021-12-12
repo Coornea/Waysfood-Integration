@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState } from "react";
 
 import { Dropdown } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
@@ -14,8 +14,6 @@ import iconProfile from "../../assets/svg/profile.svg";
 import iconAddProduct from "../../assets/svg/addproduct.svg";
 import iconLogout from "../../assets/svg/logout.svg";
 import iconCart from "../../assets/svg/cart.svg";
-import imgProfile from "../../assets/img/profile.png";
-import bensu from "../../assets/img/restaurant/bensu.png";
 
 const ProfileButton = () => {
   const history = useHistory();
@@ -35,11 +33,11 @@ const ProfileButton = () => {
         confirmBtnBsStyle="info"
         title="Your cart is empty!"
         onConfirm={() => {
-          history.push("/");
+          history.push("/cart");
           hideAlert();
         }}
         onCancel={() => {
-          history.push("/");
+          // history.push("/");
           hideAlert();
         }}
       >
@@ -60,49 +58,51 @@ const ProfileButton = () => {
 
   return (
     <>
-      <Link
-        onL
-        to={userState.loggedUser.role === "partner" ? "/income" : "/cart"}
-        onClick={() => {
-          userState.loggedUser.role !== "partner" &&
-            cartState.carts.length == 0 &&
-            showAlert();
+      <motion.div
+        whileHover={{
+          rotate: [0, 20, -20, 20, -20, 0],
+          transition: { duration: 0.5 },
         }}
+        style={{ width: "40px", height: "40px", position: "relative" }}
       >
-        <motion.div
-          whileHover={{
-            rotate: [0, 20, -20, 20, -20, 0],
-            transition: { duration: 0.5 },
-          }}
-          style={{ width: "40px", height: "40px", position: "relative" }}
-        >
-          {cartState.carts.length > 0 && (
-            <div
-              className="cart-badge"
+        {cartState.carts.length > 0 && (
+          <div
+            className="bg-danger d-flex align-item-center justify-content-center cart-badge"
+            style={{
+              width: "15px",
+              height: "15px",
+              position: "absolute",
+              right: "0px",
+              top: "8px",
+              borderRadius: "10px",
+            }}
+          >
+            <small
               style={{
-                width: "15px",
-                height: "15px",
-                position: "absolute",
-                right: "0px",
-                top: "8px",
-                borderRadius: "10px",
+                fontSize: "12px",
+                color: "white",
+                fontWeight: "bold",
               }}
-              className="bg-danger d-flex align-item-center justify-content-center"
             >
-              <small
-                style={{
-                  fontSize: "12px",
-                  color: "white",
-                  fontWeight: "bold",
-                }}
-              >
-                {cartState.carts.length}
-              </small>
-            </div>
-          )}
-          <img src={iconCart} alt="cart" width="40" />
-        </motion.div>
-      </Link>
+              {cartState.carts.length}
+            </small>
+          </div>
+        )}
+        {userState.loggedUser.role === "user" ? (
+          <Link
+            to="/cart"
+            onClick={() => {
+              userState.loggedUser.role !== "partner" &&
+                cartState.carts.length === 0 &&
+                showAlert();
+            }}
+          >
+            <img src={iconCart} alt="cart" width="40" />
+          </Link>
+        ) : (
+          <></>
+        )}
+      </motion.div>
       <Dropdown className="ml-2">
         <Dropdown.Toggle
           variant="warning"
@@ -115,7 +115,7 @@ const ProfileButton = () => {
         >
           <img
             src={userState.loggedUser.image}
-            alt="photo"
+            alt="photoProfile"
             width="64"
             height="64"
             style={{ borderRadius: "50%", objectFit: "cover" }}

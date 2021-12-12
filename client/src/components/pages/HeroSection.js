@@ -7,7 +7,7 @@ import pizza from "../../assets/svg/pizza.svg";
 export default function HeroSection() {
   return (
     <div className="py-5 bg-warning">
-      <Container>
+      <Container className="mt-5">
         <Row>
           <Col xs={12} lg={6} className="py-5">
             <h1 className="heading display-4 font-weight-bold">

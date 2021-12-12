@@ -7,7 +7,7 @@ exports.register = async (req, res) => {
   try {
     const { email, password } = req.body;
     const schema = Joi.object({
-      email: Joi.string().email().min(10).max(30).required(),
+      email: Joi.string().email().required(),
       password: Joi.string().min(5).max(20).required(),
       fullName: Joi.string().max(50).required(),
       gender: Joi.string().max(20).required(),
@@ -35,8 +35,8 @@ exports.register = async (req, res) => {
         message: "Email already registered",
       });
 
-    const hashStrength = 10;
-    const hashedPassword = await bcrypt.hash(password, hashStrength);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     const user = await User.create({
       ...req.body,
@@ -82,35 +82,33 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+  const schema = Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().min(5).max(20).required(),
+  });
 
-    const schema = Joi.object({
-      email: Joi.string().email().min(10).max(30).required(),
-      password: Joi.string().min(5).max(20).required(),
+  const { error } = schema.validate(req.body);
+
+  if (error)
+    return res.status(400).send({
+      status: "validation failed",
+      message: error.details[0].message,
     });
 
-    const { error } = schema.validate(req.body);
-
-    if (error)
-      return res.status(400).send({
-        status: "validation failed",
-        message: error.details[0].message,
-      });
-
+  try {
+    const { email, password } = req.body;
     const validateUser = await User.findOne({
       where: {
         email,
       },
     });
 
+    const isValidPass = bcrypt.compare(password, validateUser.password);
     if (!validateUser)
       return res.status(400).send({
         status: "login failed",
-        message: "Invalid credentials",
+        message: "Invalid",
       });
-
-    const isValidPass = await bcrypt.compare(password, validateUser.password);
 
     if (!isValidPass) {
       return res.status(400).send({
