@@ -32,9 +32,9 @@ export default function HeroSection() {
           </Col>
           <Col xs={12} lg={6} className="text-center">
             <motion.img
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
+              initial={{ opacity: 1 }}
+              animate="visible"
+              transition={{ duration: 0.3, delay: 0.2 }}
               src={pizza}
               alt="pizza"
               className="w-75 w-lg-100"

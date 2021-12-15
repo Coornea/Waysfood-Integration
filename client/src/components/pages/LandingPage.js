@@ -62,8 +62,8 @@ export default function LandingPage({ handleShowLogin }) {
   return (
     <>
       <motion.div
-        variants={pageInit}
-        initial="hidden"
+        // variants={pageInit}
+        // initial="hidden"
         animate="visible"
         // exit="exit"
       >

@@ -135,7 +135,7 @@ function IncomePage() {
         return (
           <>
             <td className="text-center">
-              <p className="text-success">Success</p>;
+              <p className="text-success">Success</p>
             </td>
             <td className="text-center">
               <img src={actionSuccess} height="20" alt="success action" />
@@ -193,10 +193,12 @@ function IncomePage() {
                             width: "200px",
                             overflow: "hidden",
                             whiteSpace: "nowrap",
-                            textOverflow: "ellipsis",
+                            // textOverflow: "ellipsis",
                           }}
                         >
-                          {income.order[0].title + ","}
+                          {income.order.map((item) => {
+                            return item.title + ", ";
+                          })}
                         </div>
                       </td>
                       {handleAction(income.id, income.status)}

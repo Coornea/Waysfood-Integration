@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { Form } from "react-bootstrap";
-import ReactCrop from "react-image-crop";
-import "react-image-crop/dist/ReactCrop.css";
 
 import iconClip from "../../assets/svg/clip.svg";
 

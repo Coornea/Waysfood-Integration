@@ -30,9 +30,11 @@ function EditProfilePage() {
     email: "",
     password: "",
     image: null,
+    phone: "",
+    location: "",
   });
   const { id } = userState.loggedUser;
-  const { fullName, email, password, image } = form;
+  const { fullName, email, password, image, phone, location } = form;
   const [preview, setPreview] = useState("");
 
   // Load user data
@@ -54,11 +56,13 @@ function EditProfilePage() {
 
   const addUser = useMutation(async () => {
     const body = new FormData();
-    const location = `${userState.orderLocation.lng},${userState.orderLocation.lat}`;
+    // const location = `${userState.orderLocation.lng},${userState.orderLocation.lat}`;
+    const location = userState.orderPlace;
 
     body.append("fullName", fullName);
     body.append("email", email);
     body.append("password", password);
+    body.append("phone", phone);
     body.append("location", location);
     body.append("image", image);
 
@@ -80,6 +84,7 @@ function EditProfilePage() {
       fullName: "",
       email: "",
       password: "",
+      phone: "",
       image: null,
     });
   });
@@ -90,12 +95,18 @@ function EditProfilePage() {
     !addUser?.error && history.push("/profile");
   };
 
+  const fileReader = new FileReader();
+  fileReader.onload = () => {
+    setPreview(fileReader.result);
+  };
+
   const onChange = (e) => {
     const tempForm = { ...form };
     tempForm[e.target.name] =
       e.target.type === "file" ? e.target.files[0] : e.target.value;
     setForm(tempForm);
   };
+
   useEffect(() => {
     loadUserData();
   }, []);
@@ -121,6 +132,7 @@ function EditProfilePage() {
             )}
           </Col>
         </Row>
+
         <Row>
           <Col className="">
             <Form onSubmit={handleSubmit}>
@@ -177,11 +189,26 @@ function EditProfilePage() {
                 </Col>
               </Row>
               <Row>
+                <Col xs={12} lg={12}>
+                  <Form.Group>
+                    <CustomFormInput
+                      isBrown={true}
+                      type="phone"
+                      placeholder="Phone"
+                      name="phone"
+                      value={phone}
+                      onChange={(e) => onChange(e)}
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+              <Row>
                 <Col xs={12} lg={9}>
                   <Form.Group>
                     <CustomFormInput
                       isBrown={true}
                       type="text"
+                      name="location"
                       placeholder="Location"
                       value={userState.orderPlace}
                       disabled

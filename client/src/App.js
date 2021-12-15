@@ -25,7 +25,7 @@ import PrivateRoute from "./components/routes/PrivateRoute";
 import { API, setAuthToken } from "./utils/api";
 import NotFound from "./components/pages/NotFound/NotFound";
 
-//init token pada axios
+// Axios Initialize Token
 if (localStorage.token) {
   setAuthToken(localStorage.token);
 }
